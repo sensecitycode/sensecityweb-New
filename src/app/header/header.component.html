@@ -1,0 +1,76 @@
+<mat-toolbar color="primary" style=" height:64px" class="header">
+    <span class='logo' routerLink='../'><i class="ion-ios-analytics-outline"></i>sense.city</span>
+
+     <div fxShow="true" fxHide.lt-md="true">
+        <ul>
+            <!-- <li><a class='logo' routerLink='../'><i class="ion-ios-analytics-outline"></i>sense.city</a></li> -->
+            <li routerLinkActive="active"><a routerLink='report'>{{ 'REPORT_ISSUE' | translate}}</a></li>
+            <li routerLinkActive="active"><a routerLink='search'>{{ 'SEARCH' | translate}}</a></li>
+            <li routerLinkActive="active"><a routerLink='issues'>{{ 'MORE_ISSUES' | translate}}</a></li>
+
+        </ul>
+    </div>
+    <span class="example-fill-remaining-space"></span>
+    <!-- <a><img class="translate-flag" src="assets/flags/el.png" (click)="langToEl()" /></a>
+    <a><img class="translate-flag" src="assets/flags/en.png" (click)="langToEn()"/></a> -->
+
+
+    <button mat-icon-button (click)="onLangMenuTrigger()" fxShow="true" fxHide.lt-md="true">
+        <i class="material-icons">language</i>
+    </button>
+    <span [matMenuTriggerFor]="menu" fxShow="true" fxHide.lt-md="true">{{'LANGUAGE' | translate }}</span>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="langToEl()">
+            <img class="translate-flag" src="assets/flags/el.ico" />
+            <span [ngClass]="{'font-bold':currentLang == 'el'}">Ελληνικά</span>
+        </button>
+        <button mat-menu-item (click)="langToEn()">
+            <img class="translate-flag" src="assets/flags/en.ico" />
+            <span [ngClass]="{'font-bold':currentLang == 'en'}">English</span>
+        </button>
+    </mat-menu>
+
+
+    <div fxShow="true" fxHide.gt-sm="true">
+          <button mat-icon-button (click)="sidenav.toggle()"><i class="material-icons">menu</i></button>
+    </div>
+
+
+</mat-toolbar>
+
+<mat-sidenav-container fxFlexFill class="example-container">
+
+  <mat-sidenav #sidenav fxLayout="column" fxShow="true" fxHide.gt-sm="true">
+
+    <div fxLayout="column">
+
+      <!-- <a (click)="sidenav.toggle()" mat-button>Close</a> -->
+
+      <a mat-button routerLink='report'>{{ 'REPORT_ISSUE' | translate}}</a>
+
+      <a mat-button routerLink='search'>{{ 'SEARCH' | translate}}</a>
+
+      <a mat-button routerLink='issues'>{{ 'MORE_ISSUES' | translate}}</a>
+
+      <a mat-button [matMenuTriggerFor]="menu">
+          <i class="material-icons">language</i>
+          <span>{{'LANGUAGE' | translate }}</span>
+      </a>
+      <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="langToEl()">
+              <img class="translate-flag" src="assets/flags/el.ico" />
+              <span [ngClass]="{'font-bold':currentLang == 'el'}">Ελληνικά</span>
+          </button>
+          <button mat-menu-item (click)="langToEn()">
+              <img class="translate-flag" src="assets/flags/en.ico" />
+              <span [ngClass]="{'font-bold':currentLang == 'en'}">English</span>
+          </button>
+      </mat-menu>
+
+    </div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content fxFlexFill><router-outlet></router-outlet></mat-sidenav-content>
+
+</mat-sidenav-container>

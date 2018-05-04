@@ -1,0 +1,91 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import '~@angular/material/theming';
+$custom-typography: mat-typography-config(
+    $font-family: 'Open Sans, sans-serif'
+);
+@include angular-material-typography($custom-typography);
+
+body {
+    background-color: #eee !important;
+    color:#3c4858 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    line-height: 1.4em !important;
+    font-size: 16px !important;
+}
+
+/*  full width all forms in app */
+.example-form {
+   // min-width: 150px;
+   width: 100%;
+}
+.form-field-full-width {
+   width: 100%;
+   padding: 5px 0px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+
+/*  */
+/* GLOBAL CONTENT */
+/*  */
+.card {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    margin: 25px 0;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,.14);
+    border-radius: 3px;
+    color: rgba(0,0,0,.87);
+    background: #fff;
+}
+.card [data-background-color], .card [data-background-color] a {
+    color: #fff;
+}
+
+.card [data-background-color=green] {
+    // background: linear-gradient(60deg,#66bb6a,#43a047);
+    // background: linear-gradient(60deg,#66bb6a,#43a04770);
+    background: linear-gradient(60deg,#43a04770,#66bb6a);
+    // box-shadow: 0 12px 20px -10px rgba(76,175,80,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(76,175,80,.2);
+}
+
+.card [data-background-color=orange] {
+    // background: linear-gradient(60deg,#ffa726,#fb8c00);
+    // background: linear-gradient(60deg,#ffa726,#fb8c0070);
+    background: linear-gradient(60deg,#fb8c0070,#ffa726);
+    // box-shadow: 0 12px 20px -10px rgba(255,152,0,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(255,152,0,.2);
+}
+
+.card [data-background-color=red] {
+    // background: linear-gradient(60deg,#ef5350,#e53935);
+    // background: linear-gradient(60deg,#ef5350,#e5393570);
+    background: linear-gradient(60deg,#e5393570,#ef5350);
+    // box-shadow: 0 12px 20px -10px rgba(244,67,54,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(244,67,54,.2);
+}
+
+.card [data-background-color=blue] {
+    // background: linear-gradient(60deg,#26c6da,#00acc1);
+    // background: linear-gradient(60deg,#26c6da,#00acc170);
+    background: linear-gradient(60deg,#005fc170, #2676da);
+
+    // box-shadow: 0 12px 20px -10px rgba(0,188,212,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(0,188,212,.2);
+}
+
+.card [data-background-color=purple] {
+    // background: linear-gradient(60deg,#ab47bc,#8e24aa);
+    // background: linear-gradient(60deg,#ab47bc,#8e24aa70);
+    background: linear-gradient(60deg,#8e24aa70,#ab47bc);
+    // box-shadow: 0 12px 20px -10px rgba(156,39,176,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(156,39,176,.2);
+}
+/*  */
+/* GLOBAL CONTENT CUSTOM CARD */
+/*  */
+
+.icon-margin {
+    margin-right:0.2em;
+}

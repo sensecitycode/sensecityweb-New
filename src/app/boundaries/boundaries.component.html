@@ -1,0 +1,10 @@
+<div class="col-lg-8 offset-lg-2">
+    <div class="card" >
+                    <div style="min-height:75vh; margin:0%;"
+                       leaflet
+                       (leafletMapReady)="onMapReady($event)"
+                       [leafletOptions]="mapInit"
+                       [leafletLayers]="boundaryLayer">
+                    </div>
+    </div>
+</div>

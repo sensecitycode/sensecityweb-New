@@ -1,0 +1,210 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- <div class="card"> -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header" >
+                                <p class="category">{{'ISSUE_MAP' | translate}}</p>
+                                <p class="category category-desc">{{'MARK_ISSUE' | translate}}</p>
+                                <hr />
+                                <div>
+                                    <div class="input-group">
+                                        <input class="form-control flex-input-group-append" #addressSearchInput placeholder="{{'ADDRESS' | translate}}" aria-describedby="enter address">
+                                        <div class="input-group-append">
+                                            <button mat-button class="btn-light" (click)="searchAddress(addressSearchInput.value)" style="background-color: #e9ecef;">{{'SEARCH' | translate}} </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="min-height:500px; height:70vh" id="issuesmap"
+                            leaflet
+                            (leafletMapReady)="onMapReady($event)"
+                            [leafletOptions]="mapInit"
+                            [leafletLayers]="mapLayers"
+                            [leafletZoom]="issueZoom"
+                            [leafletCenter]="issueCenter"
+                            >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <mat-horizontal-stepper [linear]="false">
+                                <mat-step [stepControl]="issueReportForm">
+                                    <form [formGroup]="issueReportForm">
+                                        <ng-template matStepLabel>{{'ISSUE_REPORT' | translate}}</ng-template>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <mat-form-field class="full-width">
+                                                        <input matInput placeholder="{{'LONGITUDE' | translate}}" formControlName="longitude"/>
+                                                        <mat-error *ngIf="issueReportForm.controls.longitude.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                    </mat-form-field>
+                                                    <mat-form-field class="full-width">
+                                                        <input matInput placeholder="{{'LATITUDE' | translate}}" formControlName="latitude"/>
+                                                        <mat-error *ngIf="issueReportForm.controls.latitude.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                    </mat-form-field>
+                                                    <mat-form-field class="full-width">
+                                                        <input matInput placeholder="{{'ADDRESS' | translate}}" formControlName="address" [required]=true/>
+                                                        <mat-error *ngIf="issueReportForm.controls.address.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <mat-form-field class="full-width">
+                                                        <mat-select placeholder="{{'ISSUE' | translate}}" formControlName="issue_type">
+                                                            <mat-option *ngFor = "let issue of issues; let issue_index = index" value="{{issue.type}}" (click)="changeIssueType(issue_index)" >{{issue.type | uppercase |translate}}</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                    <mat-form-field class="full-width">
+                                                        <mat-select placeholder="{{'ISSUE_TYPE' | translate}}" formControlName="issue_subtype">
+                                                            <mat-option *ngFor = "let subtype of issues[issueSelectedIndex].subtypes" value="{{subtype}}">{{'ISSUE_SUBTYPES.'+subtype | uppercase |translate}}</mat-option>
+                                                        </mat-select>
+                                                    </mat-form-field>
+                                                    <mat-form-field class="full-width" *ngIf ="issueReportForm.controls.issue_subtype.value == 'other'" >
+                                                        <input matInput maxlength="50" #short_desc placeholder="{{'SHORT_DESC' | translate}}" formControlName="issue_misc_desc" [required]="issueReportForm.controls.issue_subtype.value == 'other'"/>
+                                                        <!-- <mat-hint align="start">{{'SHORT_DESC_HINT' | translate}}</mat-hint> -->
+                                                        <mat-hint align="end">{{short_desc.value.length}} / 50</mat-hint>
+                                                        <mat-error *ngIf="issueReportForm.controls.issue_misc_desc.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                    </mat-form-field>
+                                                    <div class="input-group" style="padding: 0.4375em 0;">
+                                                        <div class="input-group-prepend">
+                                                            <label for="inputGroupFile01" class="input-group-text" style="font-size:inherit">{{'PHOTO' | translate}}
+                                                                <!-- <input type="file" class="custom-file-input" id="inputGroupFile01" (change)="onSelectFile($event)" style="display:none"> -->
+                                                                <input type="file" class="custom-file-input" id="inputGroupFile01" #imageUpload (change)="onSelectFile($event)" style='display:none'>
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-control flex-input-group">
+                                                            <span>{{imageName}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div *ngIf = 'imageName' class="image-container">
+                                                        <img [src]="imageUrl" class='file-thumb-wrapper'>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <mat-form-field class="full-width">
+                                                        <textarea matInput placeholder="{{'COMMENT' | translate}}" matTextareaAutosize matAutosizeMinRows="1" matAutosizeMaxRows="5" formControlName="comment"></textarea>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row stepper_nav_buttons">
+                                            <div class="col-12 text-right">
+                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled" (click)="fetchCityPolicies(); displayForm(issueReportForm)">{{'NEXT' | translate}}</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </mat-step>
+
+
+                                <mat-step [stepControl]="eponymousReportForm">
+                                    <ng-template matStepLabel>{{'EPONYMOUS_REPORT' | translate}}</ng-template>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form_header" [innerHTML]="issueCityPolicy?.policy_desc"></div>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="issueCityPolicy?.add_issue == 1">
+                                            <div class="row" >
+                                                <div class="col-md-6" >
+                                                    <mat-checkbox #eponymousCheckbox color="primary">{{'EPONYMOUS_REPORT' | translate}}</mat-checkbox>
+                                                </div>
+                                            </div>
+                                            <div class="row" *ngIf='eponymousCheckbox.checked'>
+
+                                                <div class="col-md-6">
+                                                    <form [formGroup]="eponymousReportForm">
+                                                        <mat-form-field class="full-width">
+                                                            <input matInput placeholder="{{'FULL_NAME' | translate}}" formControlName="fullname" [required]=true/>
+                                                            <mat-error *ngIf="eponymousReportForm.controls.fullname.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                        </mat-form-field>
+                                                        <mat-form-field class="full-width">
+                                                            <input matInput placeholder="Email" formControlName="email" [required]=emailChecked/>
+                                                            <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                        </mat-form-field>
+                                                        <mat-form-field class="full-width">
+                                                            <input matInput placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
+                                                            <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                        </mat-form-field>
+                                                    </form>
+                                                </div>
+
+                                                <div class="col-md-6 card info_modes_card">
+                                                    <div>
+                                                        {{'INFO_MODES' | translate}}
+                                                    </div>
+
+                                                    <div *ngIf = "cityPolicy?.active_sms_service">
+                                                        <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms" (click)="displayForm(sms_checkbox)">sms</mat-checkbox>
+                                                    </div>
+                                                    <div>
+                                                        <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email" (click)="displayForm(email_checkbox)">email</mat-checkbox>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row stepper_nav_buttons">
+                                        <div class="col-6 text-left">
+                                            <button mat-raised-button color="primary" matStepperPrevious (click)="displayForm(eponymousReportForm)">{{'PREVIOUS' | translate}}</button>
+                                        </div>
+                                        <div class="col-6 text-right" *ngIf="issueCityPolicy?.add_issue == 1">
+                                            <button mat-raised-button color="primary" matStepperNext (click)="displayForm(eponymousReportForm)">{{'NEXT' | translate}}</button>
+                                        </div>
+                                    </div>
+                                </mat-step>
+
+
+                                <mat-step>
+                                    <ng-template matStepLabel>{{'RECOMMENDED_ISSUES' | translate}}</ng-template>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="form_header">
+                                                    {{'RECOMMENDED_ISSUES_DESC' | translate}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card" style="margin:5px 0px" *ngFor="let rec_issue of recommendedIssues">
+                                            <div class="card-body row">
+                                                <div class="col-2" >
+                                                    icon
+                                                </div>
+                                                <div class="col-5" >
+                                                    label
+                                                </div>
+                                                <div class="col-5" >
+                                                    info
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row stepper_nav_buttons">
+                                        <div class="col-6 text-left">
+                                            <button mat-raised-button color="primary" matStepperPrevious (click)="displayForm(eponymousReportForm)">{{'PREVIOUS' | translate}}</button>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <button mat-raised-button color="primary" matStepperNext (click)="displayForm(eponymousReportForm)">{{'NEXT' | translate}}</button>
+                                        </div>
+                                    </div>
+                                </mat-step>
+                            </mat-horizontal-stepper>
+                        </div>
+                    </div>
+                </div>
+            <!-- </div> -->
+        </div>
+    </div>
+</div>
