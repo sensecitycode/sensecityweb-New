@@ -101,7 +101,7 @@ export class IssuesService {
 
     fetch_city_policy(lat, lng) {
         let httpParams = new HttpParams().append("lat", lat).append("long", lng)
-        console.log(httpParams)
+        // console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_city_policy`, {}, {params:httpParams} )
     }
 
@@ -114,6 +114,44 @@ export class IssuesService {
             }
         )
     }
+
+    is_user_activated(name, email, mobile) {
+        let request_params = {
+            "uuid":"web-site",
+            "name":name,
+            "city":this.city
+        }
+        if (email!="") request_params['email'] = email
+        if (mobile!="") request_params['mobile'] = mobile
+
+        console.log(request_params)
+        return this.httpClient.post<any>(`${this.API}/is_activate_user`, request_params)
+    }
+
+    request_email_code(name, email) {
+        let httpParams = new HttpParams().append("uuid", "web-site").append("name", name).append("email", email)
+        console.log(httpParams)
+        return this.httpClient.post<any>(`${this.API}/activate_user`, {}, {params:httpParams} )
+    }
+
+    activate_email(email ,code) {
+        let httpParams = new HttpParams().append("uuid", "web-site").append("email", email).append("code", code)
+        console.log(httpParams)
+        return this.httpClient.post<any>(`${this.API}/activate_email`, {}, {params:httpParams} )
+    }
+
+    request_mobile_code(name, mobile, lat, long) {
+        let httpParams = new HttpParams().append("uuid", "web-site").append("name", name).append("mobile", mobile).append("lat", lat).append("long", long).append("city", this.city)
+        console.log(httpParams)
+        return this.httpClient.post<any>(`${this.API}/activate_user`, {}, {params:httpParams} )
+    }
+
+    activate_mobile(mobile ,code) {
+        let httpParams = new HttpParams().append("uuid", "web-site").append("mobile", mobile).append("code", code)
+        console.log(httpParams)
+        return this.httpClient.post<any>(`${this.API}/activate_mobile`, {}, {params:httpParams} )
+    }
+
 
     fetch_issue_comment(bug_id) {
         //

@@ -89,3 +89,20 @@ body {
 .icon-margin {
     margin-right:0.2em;
 }
+
+.flex-align-mid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+.btn-success {
+    color: #fff !important;
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+}

@@ -59,3 +59,14 @@
     line-height: 3.7em;
     background-color: #eeeeee94;
 }
+
+
+.card-selected {
+    background-color: #eee;
+}
+
+.button-select {
+    padding: 0.1em 1.9em;
+    /* font-size: 1em; */
+    background: #ddd;
+}

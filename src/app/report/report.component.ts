@@ -67,6 +67,28 @@ export class ReportComponent implements OnInit {
         })
     }
 
+    mapEditAllowed = true
+    stepperSelectionChange(event) {
+        console.log(event)
+        if (event.selectedIndex == 0) {
+            this.mapEditAllowed = true
+        }
+
+        if (event.previouslySelectedIndex == 0) {
+            this.mapEditAllowed = false;
+            this.fetchCityPolicies()
+        }
+
+        if (event.previouslySelectedIndex == 1 && event.selectedIndex > 1) {
+            this.isUserActivated()
+        }
+
+        if (event.previouslySelectedIndex == 3) {
+            this.resetCertificationForm()
+        }
+
+    }
+
 
     //
     //  STEP 1 - ISSUE REPORT
@@ -78,25 +100,35 @@ export class ReportComponent implements OnInit {
         console.log(event)
         this.imageName = '';
         this.imageUrl = '';
-        if (event.target.files && event.target.files[0] && event.target.files[0].size < 5242880 && (event.target.files[0].type=='image/jpeg' || event.target.files[0].type=='image/png') ) {
+        if (event.target.files && event.target.files[0]) {
 
-            let reader = new FileReader();
-            this.imageName = event.target.files[0].name
+            if (event.target.files[0].type=='image/jpeg' || event.target.files[0].type=='image/png') {
 
-            console.log(event)
+                if (event.target.files[0].size < 5242880) {
+                    let reader = new FileReader();
+                    this.imageName = event.target.files[0].name
 
-            reader.readAsDataURL(event.target.files[0]); // read file as data url
-            reader.onload = (event) => {
-                console.log(event)
-                this.imageUrl = event.target['result'];
+                    console.log(event)
+
+                    reader.readAsDataURL(event.target.files[0]); // read file as data url
+                    reader.onload = (event) => {
+                        console.log(event)
+                        this.imageUrl = event.target['result'];
+                    }
+                } else {
+                    this.toastr.error(this.translationService.get_instant('SIZE_LARGER_5MB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
+                }
+            } else {
+                this.toastr.error(this.translationService.get_instant('VALID_FILE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
             }
+
         }
-        else if (event.target.files[0].size >= 5242880) {
-            this.toastr.error(this.translationService.get_instant('SIZE_LARGER_5MB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        }
-        else {
-            this.toastr.error(this.translationService.get_instant('VALID_FILE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        }
+        // else if (event.target.files && event.target.files[0] && event.target.files[0].size >= 5242880) {
+        //     this.toastr.error(this.translationService.get_instant('SIZE_LARGER_5MB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        // }
+        // else {
+        //     this.toastr.error(this.translationService.get_instant('VALID_FILE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        // }
     }
 
     issueSelectedIndex:number = 0;
@@ -177,24 +209,26 @@ export class ReportComponent implements OnInit {
         // map.doubleClickZoom.disable()
         map.on('click', (ev:L.LeafletMouseEvent) => {
             // console.log(ev.latlng)
+            if (this.mapEditAllowed == true) {
             //
             //NgZone because map click is outside of AngularScope
             //
-            this.zone.run(() => {
-                this.displayIssuesOnMap(ev.latlng.lat, ev.latlng.lng);
+                this.zone.run(() => {
+                    this.displayIssuesOnMap(ev.latlng.lat, ev.latlng.lng);
 
 
-                // this.issuesService.get_issue_address(ev.latlng.lat, ev.latlng.lng)
-                //     .subscribe(
-                //         data =>
-                //         {
-                //             if (data.results.length > 0) {
-                //                 this.issueReportForm.patchValue({address:data.results[0].formatted_address})
-                //             }
-                //         },
-                //         error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-                // )
-            });
+                    // this.issuesService.get_issue_address(ev.latlng.lat, ev.latlng.lng)
+                    //     .subscribe(
+                    //         data =>
+                    //         {
+                    //             if (data.results.length > 0) {
+                    //                 this.issueReportForm.patchValue({address:data.results[0].formatted_address})
+                    //             }
+                    //         },
+                    //         error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    // )
+                });
+            }
         })
     }
 
@@ -208,6 +242,7 @@ export class ReportComponent implements OnInit {
 
     step3_disabled:boolean = true;
     issueCityPolicy:object;
+    eponymousCheckbox = true;
     smsChecked = false;
     emailChecked = false;
     fetchCityPolicies() {
@@ -236,9 +271,17 @@ export class ReportComponent implements OnInit {
             data => {data.length > 0 ? this.recommendedIssues = data[0].bugs: this.recommendedIssues = []; console.log(this.recommendedIssues) },
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
-                
+                this.recommendedIssues.forEach( (element) => {
+                    element.icon = `fa ${this.issuesService.get_issue_icon(this.issueReportForm.get('issue_type').value)}`
+                    element.URL = 'issue/' + element.alias[0]
+                })
             }
         )
+    }
+
+    selectedRecomIndex:number
+    selectRecommendedIssue(index) {
+        (this.selectedRecomIndex != index) ? this.selectedRecomIndex = index : this.selectedRecomIndex = undefined
     }
     //
     //  --- END OF STEP 3 - RECOMMENDED ISSUE ---
@@ -248,6 +291,126 @@ export class ReportComponent implements OnInit {
     //  STEP 4 - CERTIFICATION
     //
 
+    isActivated: { activate_email:string, activate_sms:string }
+    emailActivated =  false;
+    mobileActivated = false;
+    isUserActivated() {
+        // if (this.eponymousReportForm.get('email'))!=
+        this.emailActivated =  false;
+        this.mobileActivated = false;
+
+        let _email = ""
+        let _mobile = ""
+        if (this.emailChecked) _email = this.eponymousReportForm.get('email').value
+        if (this.smsChecked) _mobile = this.eponymousReportForm.get('mobile').value
+
+        this.issuesService.is_user_activated(this.eponymousReportForm.get('fullname').value, _email, _mobile)
+        .subscribe(
+            data => {this.isActivated = data[0]},
+            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
+            () => {
+                if (this.emailChecked) {
+                    console.log(this.isActivated.activate_email);
+                    (this.isActivated.activate_email == "1") ? this.emailActivated = true : this.emailActivated = false
+                }
+                if (this.smsChecked) {
+                    console.log(this.isActivated.activate_sms);
+                    (this.isActivated.activate_sms == "1") ? this.mobileActivated = true : this.mobileActivated = false
+                }
+                console.log(this.checkActivatedGuards())
+            }
+        )
+    }
+
+    checkActivatedGuards() {
+        if (this.emailChecked && this.smsChecked) {
+            return (this.emailActivated && this.mobileActivated)
+        } else {
+            if (this.emailChecked) return this.emailActivated
+            if (this.mobileActivated) return this.mobileActivated
+        }
+    }
+
+    emailCodeSent = false;
+    emailCodeChecked = false;
+    // emailCertified = false;
+
+    mobileCodeSent = false;
+    mobileCodeChecked = false;
+    // mobileCertified = false;
+
+    requestEmailCode() {
+        this.issuesService.request_email_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('email').value)
+        .subscribe(
+            data => {
+                console.log(data)
+                if (data.length > 0) {
+                    if (data[0].Status == "send") this.emailCodeSent = true
+                }
+            },
+            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        )
+    }
+
+    activateEmail(code) {
+        this.issuesService.activate_email(this.eponymousReportForm.get('email').value, code)
+        .subscribe(
+            data => {
+                this.emailCodeChecked = true
+                console.log(data)
+                if (data == null) {
+                    this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
+                }
+                else if (data.nModified && data.nModified == 1) {
+                    this.emailActivated = true
+                    this.toastr.success(this.translationService.get_instant('EMAIL_VERIFIED'), this.translationService.get_instant('SUCCESS'), {timeOut:5000, progressBar:true, enableHtml:true})
+                }
+            },
+            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        )
+    }
+
+    requestMobileCode() {
+        this.issuesService.request_mobile_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('mobile').value, this.issueReportForm.get('latitude').value, this.issueReportForm.get('longitude').value)
+        .subscribe(
+            data => {
+                console.log(data)
+                if (data.status) {
+                    if (data.status == "send sms") this.mobileCodeSent = true
+                }
+            },
+            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        )
+
+    }
+
+    activateMobile(code) {
+        this.issuesService.activate_mobile(this.eponymousReportForm.get('mobile').value, code)
+        .subscribe(
+            data => {
+                this.mobileCodeChecked = true
+                console.log(data)
+                if (data.nModified && data.nModified == 0) {
+                    this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
+                }
+                else if (data.nModified && data.nModified == 1) {
+                    this.mobileActivated = true
+                    this.toastr.success(this.translationService.get_instant('MOBILE_VERIFIED'), this.translationService.get_instant('SUCCESS'), {timeOut:5000, progressBar:true, enableHtml:true})
+                }
+            },
+            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+        )
+
+    }
+
+    resetCertificationForm() {
+        this.emailCodeSent = false;
+        this.emailCodeChecked = false;
+        this.mobileCodeSent = false;
+        this.mobileCodeChecked = false;
+    }
+
+
     //
     //  --- END OF STEP 4 - CERTIFICATION ---
     //
@@ -255,6 +418,20 @@ export class ReportComponent implements OnInit {
     //
     //  STEP 5 - SUBMIT ISSUE
     //
+
+    issueReportSent = false
+    sendIssueReport() {
+        // this.issueReportSent = true
+        console.log(this.recommendedIssues)
+        console.log(this.selectedRecomIndex)
+        if (this.selectedRecomIndex != undefined ) {
+            console.log('subscribe')
+            console.log(this.recommendedIssues[this.selectedRecomIndex])
+        } else {
+            console.log('submit')
+        }
+
+    }
 
     //
     //  --- END OF STEP 5 - SUBMIT ISSUE ---
