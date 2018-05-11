@@ -110,7 +110,7 @@
                             <p class="category category-desc">{{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}} ({{'LAST_7_DAYS' | translate}})</p>
                         </div>
 
-                        <div style="min-height:500px; height:70vh" id="issuesmap"
+                        <div style="min-height:500px; height:80vh" id="issuesmap"
                         leaflet
                         (leafletMapReady)="onMapReady($event)"
                         (leafletMarkerClusterReady)="markerClusterReady($event)"
@@ -139,7 +139,7 @@
                         <ngu-item NguCarouselItem class="bannerStyle card" *ngFor="let issue of issuesLast6; let issue_index = index">
                             <div class="carousel-image-container">
                                 <div class="carousel-image">
-                                    <img *ngIf="!brokenImages[issue_index]" src="{{issue.image_URL}}" (error)="imageLoadError(issue_index)"/>
+                                    <img *ngIf="!brokenImages[issue_index]" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
                                     <i *ngIf="brokenImages[issue_index]" class="fa {{issue.icon}}" style="font-size:10.5em"></i>
                                 </div>
 

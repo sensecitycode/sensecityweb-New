@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-lg-8">
                         <div class="card">
-                            <mat-horizontal-stepper [linear]="false" (selectionChange)="stepperSelectionChange($event)" #stepper>
+                            <mat-horizontal-stepper [linear]="true" (selectionChange)="stepperSelectionChange($event)" #stepper [selectedIndex]="selectedStepIndex">
                                 <mat-step [stepControl]="issueReportForm">
                                     <form [formGroup]="issueReportForm">
                                         <ng-template matStepLabel>{{'ISSUE_REPORT' | translate}}</ng-template>
@@ -48,7 +48,7 @@
                                                         <mat-error *ngIf="issueReportForm.controls.latitude.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                                     </mat-form-field>
                                                     <mat-form-field class="full-width">
-                                                        <input matInput placeholder="{{'ADDRESS' | translate}}" formControlName="address" [required]=true/>
+                                                        <input matInput placeholder="{{'ADDRESS' | translate}}" formControlName="address"/>
                                                         <mat-error *ngIf="issueReportForm.controls.address.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                                     </mat-form-field>
                                                 </div>
@@ -94,7 +94,7 @@
 
                                         <div class="row stepper_nav_buttons">
                                             <div class="col-12 text-right">
-                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled" (click)="displayForm(issueReportForm)">{{'NEXT' | translate}}</button>
+                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -141,10 +141,10 @@
                                                     </div>
 
                                                     <div *ngIf = "cityPolicy?.active_sms_service">
-                                                        <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms" (click)="displayForm(sms_checkbox)">sms</mat-checkbox>
+                                                        <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
                                                     </div>
                                                     <div>
-                                                        <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email" (click)="displayForm(email_checkbox)">email</mat-checkbox>
+                                                        <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
@@ -156,10 +156,10 @@
 
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious (click)="displayForm(eponymousReportForm)">{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                         <div class="col-6 text-right" *ngIf="issueCityPolicy?.add_issue == 1">
-                                            <button mat-raised-button color="primary" matStepperNext (click)="displayForm(eponymousReportForm)">{{'NEXT' | translate}}</button>
+                                            <button mat-raised-button color="primary" matStepperNext>{{'NEXT' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
@@ -306,7 +306,7 @@
                                             <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <button mat-raised-button color="primary" matStepperNext [disabled]="!checkActivatedGuards()">{{'NEXT' | translate}}</button>
+                                            <button mat-raised-button color="primary" matStepperNext [disabled]="!checkActivatedGuards() && eponymousCheckbox">{{'NEXT' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
@@ -329,13 +329,14 @@
                                     </div>
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious (click)="displayForm(eponymousReportForm)">{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
 
                             </mat-horizontal-stepper>
                         </div>
+                        <!-- {{imageName}} {{imageUrl}} -->
                         {{emailChecked}} {{smsChecked}}
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgProgress } from '@ngx-progressbar/core';
 
@@ -18,9 +18,14 @@ export class AppComponent {
 
     private subscription: Subscription;
     constructor(public router: Router) {
-        this.subscription = router.events.subscribe(event => {
+
+    }
+
+    ngOnInit() {
+        this.subscription = this.router.events.subscribe(event => {
             // console.log(event)
             if (event instanceof NavigationEnd) {
+            // console.log(event)
                 ga('set', 'page', event.urlAfterRedirects);
                 ga('send', 'pageview');
 

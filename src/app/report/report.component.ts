@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, NgZone, DoCheck } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, NgZone, DoCheck, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { TranslationService } from '../shared/translation.service';
@@ -33,14 +33,15 @@ export class ReportComponent implements OnInit {
     ]
 
     eponymousReportForm: FormGroup;
-    CertificationForm: FormGroup;
+    // CertificationForm: FormGroup;
 
     mapInit: {};
     mapLayers = [];
     issueZoom:number
     issueCenter: L.LatLng
 
-
+    @ViewChild('stepper') stepper;
+    selectedStepIndex = 0
 
     ngOnInit() {
         let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
@@ -76,17 +77,34 @@ export class ReportComponent implements OnInit {
 
         if (event.previouslySelectedIndex == 0) {
             this.mapEditAllowed = false;
-            this.fetchCityPolicies()
+            this.fetchIssuePolicies()
+            if (this.eponymousCheckbox) {
+                this.fetchRecommendedIssues()
+            }
         }
 
-        if (event.previouslySelectedIndex == 1 && event.selectedIndex > 1) {
+        if (event.previouslySelectedIndex == 1 && event.selectedIndex > 1 && this.eponymousCheckbox) {
             this.isUserActivated()
+        }
+
+        if (event.previouslySelectedIndex == 1 && !this.eponymousCheckbox) {
+            this.recommendedIssues = []
+            this.selectedRecomIndex = undefined
+        }
+
+        if (event.selectedIndex == 2 && this.recommendedIssues.length == 0) {
+            console.log('optional')
+            if (event.previouslySelectedIndex < 2) {
+                this.selectedStepIndex = 3
+            }
+            if (event.previouslySelectedIndex > 2) {
+                this.selectedStepIndex = 1
+            }
         }
 
         if (event.previouslySelectedIndex == 3) {
             this.resetCertificationForm()
         }
-
     }
 
 
@@ -123,12 +141,6 @@ export class ReportComponent implements OnInit {
             }
 
         }
-        // else if (event.target.files && event.target.files[0] && event.target.files[0].size >= 5242880) {
-        //     this.toastr.error(this.translationService.get_instant('SIZE_LARGER_5MB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        // }
-        // else {
-        //     this.toastr.error(this.translationService.get_instant('VALID_FILE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        // }
     }
 
     issueSelectedIndex:number = 0;
@@ -194,7 +206,6 @@ export class ReportComponent implements OnInit {
 
                     //
                     //for 3nd step
-                    this.fetchRecommendedIssues()
 
                 } else {
                     this.step2_disabled = true;
@@ -217,16 +228,16 @@ export class ReportComponent implements OnInit {
                     this.displayIssuesOnMap(ev.latlng.lat, ev.latlng.lng);
 
 
-                    // this.issuesService.get_issue_address(ev.latlng.lat, ev.latlng.lng)
-                    //     .subscribe(
-                    //         data =>
-                    //         {
-                    //             if (data.results.length > 0) {
-                    //                 this.issueReportForm.patchValue({address:data.results[0].formatted_address})
-                    //             }
-                    //         },
-                    //         error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-                    // )
+                    this.issuesService.get_issue_address(ev.latlng.lat, ev.latlng.lng)
+                        .subscribe(
+                            data =>
+                            {
+                                if (data.results.length > 0) {
+                                    this.issueReportForm.patchValue({address:data.results[0].formatted_address})
+                                }
+                            },
+                            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    )
                 });
             }
         })
@@ -240,12 +251,11 @@ export class ReportComponent implements OnInit {
     //  STEP 2 - EPONYMOUS REPORT
     //
 
-    step3_disabled:boolean = true;
     issueCityPolicy:object;
     eponymousCheckbox = true;
     smsChecked = false;
     emailChecked = false;
-    fetchCityPolicies() {
+    fetchIssuePolicies() {
         this.issuesService.fetch_issue_city_policy(this.issueReportForm.get('latitude').value, this.issueReportForm.get('longitude').value, this.issueReportForm.get('issue_type').value)
         .subscribe(
             data => this.issueCityPolicy = data[0],
@@ -421,16 +431,127 @@ export class ReportComponent implements OnInit {
 
     issueReportSent = false
     sendIssueReport() {
-        // this.issueReportSent = true
+        this.issueReportSent = true
         console.log(this.recommendedIssues)
         console.log(this.selectedRecomIndex)
-        if (this.selectedRecomIndex != undefined ) {
+        if (this.selectedRecomIndex == undefined ) {
+            console.log('submit')
+            let value_desc = "";
+            this.issueReportForm.get('issue_subtype').value != "other" ? value_desc = this.translationService.get_instant("ISSUE_SUBTYPES." + this.issueReportForm.get('issue_subtype').value.toUpperCase()) : value_desc = this.issueReportForm.get('issue_misc_desc').value
+
+            let image_name = ""
+            this.imageName == "" ? image_name = "no-image" : image_name = this.imageUrl
+
+            let issue_obj = {
+                "loc": {
+                    "type":"Point",
+                    "coordinates":[this.issueReportForm.get('longitude').value, this.issueReportForm.get('latitude').value]
+                },
+                "issue":this.issueReportForm.get('issue_type').value,
+                "device_id":"webapp",
+                "value_desc":value_desc,
+                "image_name":image_name,
+                "city_address":this.issueReportForm.get('address').value
+            }
+
+            if (this.issueReportForm.get('comment').value != '') {
+                issue_obj['comments'] = this.issueReportForm.get('comment').value.replace(/\s+/g, ' ').trim()
+            }
+
+            let issueReportResponse = {}
+            this.issuesService.issue_report_anon(issue_obj)
+            .subscribe(
+                data => issueReportResponse = data,
+                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
+                () => {
+                    if (this.eponymousCheckbox) {
+                        console.log("eponumous")
+                        let user_obj = {
+                            "uuid":"web-site",
+                            "name":this.eponymousReportForm.get('fullname').value,
+                            "email":this.eponymousReportForm.get('email').value,
+                            "mobile_num":this.eponymousReportForm.get('mobile').value
+                        }
+                        this.issuesService.make_issue_eponymous(issueReportResponse["_id"], user_obj)
+                        .subscribe(
+                            data => {
+                                if (data.description && data.description == "ok") {
+                                    this.toastr.success(this.translationService.get_instant('ISSUE_REPORT_SUCCESS'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
+                                } else {
+                                    this.toastr.error(this.translationService.get_instant('ISSUE_REPORT_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                                }
+                                this.resetStepper()
+                            },
+                            error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                        )
+                    }
+                }
+            )
+        } else {
             console.log('subscribe')
             console.log(this.recommendedIssues[this.selectedRecomIndex])
-        } else {
-            console.log('submit')
+            let sub_obj = {
+                "name":this.eponymousReportForm.get('fullname').value,
+                "email":this.eponymousReportForm.get('email').value,
+                "mobile_num":this.eponymousReportForm.get('mobile').value,
+                "bug_id":this.recommendedIssues[this.selectedRecomIndex].id
+            }
+
+            if (this.issueReportForm.get('comment').value != '') {
+                sub_obj['comment'] = this.issueReportForm.get('comment').value.replace(/\s+/g, ' ').trim()
+            }
+
+
+            let issueSubResponse = {}
+            this.issuesService.issue_subscribe(sub_obj)
+            .subscribe(
+                data => {
+                    console.log(data);
+                    if (data.message == "OK") {
+                        this.toastr.success(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    } else {
+                        this.toastr.error(this.translationService.get_instant('SMS_NOT_SUPPORTED_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    }
+                    this.resetStepper()
+                },
+                error => {
+                    console.log(error)
+                    if (error.error == "Bad Request") {
+                        this.toastr.error(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    } else {
+                        this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
+                    }
+                }
+            )
+
         }
 
+    }
+
+    resetStepper() {
+        this.selectedStepIndex = 0
+        this.stepper.reset()
+
+        this.step2_disabled = true;
+        // this.issueReportForm.reset();
+        this.issueSelectedIndex = 0
+        this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin'})
+
+        this.imageName = '';
+        this.imageUrl = '';
+        this.issueZoom = this.issuesService.cityCenter.zoom,
+        this.issueCenter = L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
+        this.mapLayers = []
+
+        this.recommendedIssues = []
+        this.selectedRecomIndex = undefined
+
+        this.emailCodeSent = false;
+        this.emailCodeChecked = false;
+        this.mobileCodeSent = false;
+        this.mobileCodeChecked = false;
+
+        this.issueReportSent = false;
     }
 
     //
@@ -445,13 +566,6 @@ export class ReportComponent implements OnInit {
     //     console.log('change')
     //     // this.changeDetection.markForCheck()
     // }
-    displayForm(form) {
-        console.log(form)
-        console.log(form.value)
-        // console.log(this.imageUrl)
-        console.log(this.cityPolicy)
-        console.log(this.issueCityPolicy)
-    }
 
 
 

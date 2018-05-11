@@ -341,7 +341,6 @@ export class OverviewComponent implements OnInit {
     // }
 
     imageLoadError(image_index) {
-        // console.log(event)
         this.brokenImages[image_index] = true;
     }
 }

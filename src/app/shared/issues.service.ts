@@ -152,6 +152,22 @@ export class IssuesService {
         return this.httpClient.post<any>(`${this.API}/activate_mobile`, {}, {params:httpParams} )
     }
 
+    issue_report_anon (issue) {
+        console.log(issue)
+        return this.httpClient.post<any>(`${this.API}/issue`, issue)
+    }
+
+    make_issue_eponymous (issue_id, user_data) {
+        console.log(issue_id)
+        console.log(user_data)
+        return this.httpClient.post<any>(`${this.API}/issue/${issue_id}`, user_data)
+    }
+
+    issue_subscribe (subscription) {
+        console.log(subscription)
+        return this.httpClient.post<any>(`${this.API}/issue_subscribe`, subscription)
+    }
+
 
     fetch_issue_comment(bug_id) {
         //
