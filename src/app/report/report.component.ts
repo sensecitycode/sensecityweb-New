@@ -26,8 +26,8 @@ export class ReportComponent implements OnInit {
         {type:"garbage", subtypes:["damaged_bin", "oversized_objects", "tree_branches", "debris", "street_cleaning", "road_sweeping", "other"]},
         {type:"lighting", subtypes:["burned_out_bulb", "flickering_bulb", "lighting_expansion", "fixture_installation", "other"]},
         {type:"road-constructor", subtypes:["pothole", "encroachment", "broken_tiles", "abandoned_car", "pavement_squating", "broken_bench", "botchery","other"]},
-        {type:"protection-policy", subtypes:["natural_disaster", "unclean_land", "other"]},
-        {type:"green", subtypes:["grass_cutting", "tree_trimming", "other"]},
+        {type:"protection-policy", subtypes:["natural_disaster", "unclean_private_land", "other"]},
+        {type:"green", subtypes:["grass_cutting", "tree_trimming", "unclean_municipal_land", "other"]},
         {type:"environment", subtypes:["recycling", "rodent_extermination", "pest_control", "other"]},
         {type:"plumbing", subtypes:["clogged_drain", "broken_drain", "leakage", "other"]},
     ]
