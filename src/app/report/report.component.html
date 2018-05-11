@@ -60,11 +60,11 @@
                                                     </mat-form-field>
                                                     <mat-form-field class="full-width">
                                                         <mat-select placeholder="{{'ISSUE_TYPE' | translate}}" formControlName="issue_subtype">
-                                                            <mat-option *ngFor = "let subtype of issues[issueSelectedIndex].subtypes" value="{{subtype}}">{{'ISSUE_SUBTYPES.'+subtype | uppercase |translate}}</mat-option>
+                                                            <mat-option *ngFor = "let subtype of issues[issueSelectedIndex].subtypes" value="{{subtype}}" (click)="changeIssueSubType(subtype)">{{'ISSUE_SUBTYPES.'+subtype | uppercase |translate}}</mat-option>
                                                         </mat-select>
                                                     </mat-form-field>
-                                                    <mat-form-field class="full-width" *ngIf ="issueReportForm.controls.issue_subtype.value == 'other'" >
-                                                        <input matInput maxlength="50" #short_desc placeholder="{{'SHORT_DESC' | translate}}" formControlName="issue_misc_desc" [required]="issueReportForm.controls.issue_subtype.value == 'other'"/>
+                                                    <mat-form-field class="full-width" *ngIf ="subtypeOtherSelected" >
+                                                        <input matInput maxlength="50" #short_desc placeholder="{{'SHORT_DESC' | translate}}" formControlName="issue_misc_desc" [required]=subtypeOtherSelected/>
                                                         <!-- <mat-hint align="start">{{'SHORT_DESC_HINT' | translate}}</mat-hint> -->
                                                         <mat-hint align="end">{{short_desc.value.length}} / 50</mat-hint>
                                                         <mat-error *ngIf="issueReportForm.controls.issue_misc_desc.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
@@ -94,7 +94,7 @@
 
                                         <div class="row stepper_nav_buttons">
                                             <div class="col-12 text-right">
-                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
+                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled" (click)="display(issueReportForm.controls.issue_misc_desc)">{{'NEXT' | translate}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -337,7 +337,7 @@
                             </mat-horizontal-stepper>
                         </div>
                         <!-- {{imageName}} {{imageUrl}} -->
-                        {{emailChecked}} {{smsChecked}}
+                        {{emailChecked}} {{smsChecked}} {{issueReportForm.get('comment').value}}
                     </div>
                 </div>
             <!-- </div> -->

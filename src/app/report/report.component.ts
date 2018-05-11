@@ -147,7 +147,22 @@ export class ReportComponent implements OnInit {
     changeIssueType(index) {
         // console.log(index)
         this.issueSelectedIndex = index
+
         this.issueReportForm.patchValue({issue_subtype:this.issues[index].subtypes[0]})
+        this.changeIssueSubType(this.issues[index].subtypes[0])
+    }
+
+    subtypeOtherSelected = false;
+    changeIssueSubType(subtype) {
+        if (subtype == 'other') {
+            this.subtypeOtherSelected = true
+        }  else {
+            this.subtypeOtherSelected = false;
+            this.issueReportForm.get('issue_misc_desc').clearValidators()
+            this.issueReportForm.get('issue_misc_desc').updateValueAndValidity()
+        }
+        console.log(this.subtypeOtherSelected)
+
     }
 
     searchAddress(address) {
@@ -535,13 +550,15 @@ export class ReportComponent implements OnInit {
         this.step2_disabled = true;
         // this.issueReportForm.reset();
         this.issueSelectedIndex = 0
-        this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin'})
-
+        this.subtypeOtherSelected = false
+        this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin', address:'', comment:'', issue_misc_desc:''})
         this.imageName = '';
         this.imageUrl = '';
         this.issueZoom = this.issuesService.cityCenter.zoom,
         this.issueCenter = L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         this.mapLayers = []
+
+        this.eponymousReportForm.setValue({fullname:'', email:'', mobile:''})
 
         this.recommendedIssues = []
         this.selectedRecomIndex = undefined
@@ -558,15 +575,9 @@ export class ReportComponent implements OnInit {
     //  --- END OF STEP 5 - SUBMIT ISSUE ---
     //
 
-
-
-
-
     // ngDoCheck() {
     //     console.log('change')
     //     // this.changeDetection.markForCheck()
     // }
-
-
 
 }
