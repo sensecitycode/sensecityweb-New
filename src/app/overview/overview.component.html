@@ -164,7 +164,7 @@
                                 <p class="category"><small><span class="fa fa-clock-o icon-margin"></span>{{ 'REPORTED' | translate }}</small><br /></p>
                                 <p class="category-desc category-desc-carousel">{{ issue.created_ago }}</p>
 
-                                <p class="category"><small><span class="fa fa-info-circle icon-margin"></span>{{ 'DETAILS' | translate }}...</small></p>
+                                <p class="category"><a [routerLink]="['/issue',issue._id]"><small><span class="fa fa-info-circle icon-margin"></span>{{ 'DETAILS' | translate }}...</small></a></p>
                             </div>
                         </ngu-item>
                         <button NguCarouselPrev class='leftRs'>&lt;</button>

@@ -1,0 +1,302 @@
+<div class="container-fluid main-content">
+    <!-- <div class="row"> -->
+    <h3 class="text-center">{{'ISSUE_PROGRESS' | translate}} <span *ngIf='issue?.bug_id' style="letter-spacing:1px">#{{issue?.bug_id}}</span></h3>
+    <div class="timeline">
+        <div class="timeline-event" *ngFor='let progress of history; index as index; first as first'>
+            <div class="card timeline-content">
+                <div class="card-header" *ngIf='!first'>
+                    <i>
+                        <span *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>{{'STATUS_CHANGE'| translate}}</span>
+                        <span *ngIf="progress.state == 'NEW_USER_SUBSCRIBED'">{{'NEW_USER_SUBSCRIBED'| translate}}</span>
+                        <span *ngIf="progress.state == 'USER_COMMENTED'">{{'USER_COMMENTED'| translate}}</span>
+                        <span *ngIf="progress.state == 'USER_UPLOADED_FILES'">{{'USER_UPLOADED_FILES'| translate}}</span>
+                    </i>
+                </div>
+                <div class="card-body" *ngIf='first' style="padding-bottom:0">
+                    <div class="row" >
+                        <div class="col-lg-7">
+                            <div class="card" style="margin-top:0">
+                                <div class="card-header" >
+                                    <p class="category">{{'ISSUE_MAP' | translate}}</p>
+                                    <p class="category category-desc">{{'MAP_DISPLAY_ISSUE' | translate}}</p>
+                                </div>
+                                <div style="min-height:200px; height:40vh"
+                                leaflet
+                                (leafletMapReady)="onMapReady($event)"
+                                [leafletOptions]="mapInit"
+                                [leafletLayers]="mapLayers"
+                                [leafletZoom]="issueZoom"
+                                [leafletCenter]="issueCenter"
+                                >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card" style="margin-top:0">
+                                <div class="card-header" >
+                                    <p class="category">{{'ISSUE_IMAGE' | translate}}</p>
+                                    <p class="category category-desc">{{issue.issue | uppercase | translate}} ({{issue.value_desc}})</p>
+                                </div>
+                                <div class="flex-align-mid card-body" style="min-height:200px; height:40vh">
+                                    <img *ngIf="!imageBroken" [src]="issueImage[0].thumb" (click)="openLightbox()" (error)="imageLoadError()" style ="height:100%; max-width:100%; cursor:pointer"/>
+                                    <i *ngIf="imageBroken" class="{{issueIcon}} responsive-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body" style="margin: 0" *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
+                    <p *ngIf='first'>{{ 'ADDRESS' | translate }}: <strong>{{issue.city_address}}</strong></p>
+                    <div>{{ 'ASSIGNED_TO' | translate }}: <strong>{{progress.department}}</strong></div>
+                </div>
+
+                <div *ngIf="!last && progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div>
+                <div *ngIf="last && progress.text != 'undefined' && issue.resolution != 'DUPLICATE'" class='comment card-body'>{{progress.text}}</div>
+                <div *ngIf="last && issue.resolution == 'DUPLICATE'" class='comment card-body'>{{'DASHBOARD.DUPLICATE_ISSUE_REPORTED' | translate}} #{{progress.text}}</div>
+                <div *ngIf="progress.fileURLSs != []" style='display:flex'>
+                        <div *ngFor="let fileURL of progress.fileURLs; index as fileIndex;" style="height: 4rem; width: 4rem; float: left; margin: 1.25rem; margin-right: 0">
+                            <a *ngIf="progress.file_types[fileIndex] === 'application'" href="{{fileURL}}" class="file-thumb-wrapper fa fa-file-o"></a>
+                            <a *ngIf="progress.file_types[fileIndex] === 'image'" href="{{fileURL}}" class="file-thumb-wrapper">
+                                <img  class="img-responsive img-text" src="{{fileURL}}&thumb=1" alt="image" style="width:100%">
+                            </a>
+                        </div>
+
+                </div>
+
+                <div class="card-footer" style="display:flex">
+                    <ul class="list-tags">
+                        <li *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
+                            <i class="fa fa-exclamation-circle icon-margin" *ngIf="progress.state == 'CONFIRMED'"></i>
+                            <i class="fa fa-question-circle icon-margin" *ngIf="progress.state == 'IN_PROGRESS'"></i>
+                            <i class="fa fa-check-circle icon-margin" *ngIf="progress.state == 'RESOLVED'"></i>
+                            <span>{{progress.state | translate}}</span>
+                        </li>
+                        <li *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
+                            <i class='fa  fa-building-o icon-margin'></i><span>{{progress.department}}</span>
+                        </li>
+                        <li>
+                            <i class='fa {{issuesService.get_issue_icon(issue.issue)}} icon-margin'></i><span>{{issue.issue | uppercase | translate}}</span>
+                        </li>
+                        <li>
+                            <i class='fa fa-commenting-o icon-margin'></i><span>{{issue.value_desc}}</span>
+                        </li>
+                        <li>
+                            <i class='fa fa-home icon-margin'></i><span>{{issue.city_address}}</span>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+            <div [ngClass]="{'timeline-badge':true, 'text-white':true, 'red':progress.state == 'CONFIRMED',  'orange':progress.state == 'IN_PROGRESS',  'green':progress.state == 'RESOLVED', 'blue':progress.state == 'NEW_USER_SUBSCRIBED' || progress.state == 'USER_COMMENTED' || progress.state == 'USER_UPLOADED_FILES'}">
+                <i class="material-icons" *ngIf="progress.state == 'CONFIRMED'">error </i>
+                <i class="material-icons" *ngIf="progress.state == 'IN_PROGRESS'">help </i>
+                <i class="material-icons" *ngIf="progress.state == 'RESOLVED'">check_circle </i>
+                <i class="material-icons" *ngIf="progress.state == 'NEW_USER_SUBSCRIBED'">rss_feed </i>
+                <i class="material-icons" *ngIf="progress.state == 'USER_COMMENTED'">comment </i>
+                <i class="material-icons" *ngIf="progress.state == 'USER_UPLOADED_FILES'">insert_drive_file </i>
+                <!-- <span  [ngClass]="{'fa fa-lg':true, 'fa-feed':progress.state == 'NEW_USER_SUBSCRIBED', 'fa-commenting-o':progress.state == 'USER_COMMENTED', 'fa-file-o':progress.state == 'USER_UPLOADED_FILES', 'fa-tasks':progress.state == 'IN_PROGRESS', 'fa-exclamation-triangle':progress.state == 'CONFIRMED', 'fa-check-square':progress.state == 'RESOLVED'}"></span> -->
+
+            </div>
+            <div class="timeline-time">
+                <div>{{ progress.created_at}}</div>
+                <div class="clock"><i class="fa fa-clock-o fa-sm icon-margin"></i>{{ progress.timestamp | date: 'HH:mm'}}</div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <p class="category">{{'SUBSCRIPTION_FORM' | translate}}</p>
+                    <p class="category category-desc">{{'SUBSCRIPTION_DESC' | translate}}</p>
+                </div>
+                <mat-horizontal-stepper [linear]="true" (selectionChange)="stepperSelectionChange($event)" #stepper [selectedIndex]="selectedStepIndex">
+                    <mat-step [stepControl]="eponymousReportForm">
+                        <ng-template matStepLabel>{{'SUBSCRIPTION_FORM_STEP' | translate}}</ng-template>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form_header" [innerHTML]="issueCityPolicy?.policy_desc"></div>
+                                </div>
+                            </div>
+
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <form [formGroup]="eponymousReportForm">
+                                            <mat-form-field class="full-width">
+                                                <input matInput placeholder="{{'FULL_NAME' | translate}}" formControlName="fullname" [required]=true/>
+                                                <mat-error *ngIf="eponymousReportForm.controls.fullname.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field class="full-width">
+                                                <input matInput placeholder="Email" formControlName="email" [required]=emailChecked/>
+                                                <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field class="full-width">
+                                                <input matInput placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
+                                                <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                            </mat-form-field>
+                                        </form>
+                                    </div>
+
+                                    <div class="col-md-6 card info_modes_card">
+                                        <div>
+                                            {{'INFO_MODES' | translate}}
+                                        </div>
+
+                                        <div *ngIf = "cityPolicy?.active_sms_service">
+                                            <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
+                                        </div>
+                                        <div>
+                                            <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                        </div>
+
+                        <div class="row stepper_nav_buttons">
+                            <div class="col-12 text-right">
+                                <button mat-raised-button color="primary" matStepperNext>{{'NEXT' | translate}}</button>
+                            </div>
+                        </div>
+                    </mat-step>
+
+                    <mat-step>
+                        <ng-template matStepLabel>{{'CERTIFICATION' | translate}}</ng-template>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form_header">
+                                        <div>
+                                            <div *ngIf = 'checkActivatedGuards()'>
+                                                <span *ngIf ='emailActivated && mobileActivated'>{{'CERTIFIED_MAIL_MOBILE' | translate}}</span>
+                                                <span *ngIf ='!mobileActivated && emailActivated'>{{'CERTIFIED_MAIL' | translate}}</span>
+                                                <span *ngIf ='!emailActivated && mobileActivated'>{{'CERTIFIED_MOBILE' | translate}}</span>
+                                            </div>
+
+                                            <div *ngIf = 'emailChecked && !emailActivated'>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="row">
+                                                            <div class="col-10">
+                                                                <mat-form-field class="full-width">
+                                                                    <input matInput #emailCertCode placeholder="{{'EMAIL_CERT_CODE' | translate}}"/>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-2 flex-align-mid">
+                                                                <i *ngIf="emailCodeChecked && emailActivated" class="fa fa-check fa-2x"></i>
+                                                                <i *ngIf="emailCodeChecked && !emailActivated" class="fa fa-times fa-2x"></i>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 flex-vertical-align">
+                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="requestEmailCode()" [disabled]="emailCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                    </div>
+                                                    <div class="col-md-4 flex-vertical-align">
+                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="activateEmail(emailCertCode.value)">{{'CERTIFICATION' | translate}}</button>
+                                                    </div>
+
+                                                    <div class="col-12" *ngIf="emailCodeSent && !emailActivated">
+                                                        <p><i>{{ 'EMAIL_CODE_SENT' | translate: {email:eponymousReportForm.controls.email.value} }}</i></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div *ngIf = 'smsChecked && !mobileActivated'>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="row">
+                                                            <div class="col-10">
+                                                                <mat-form-field class="full-width">
+                                                                    <input matInput #mobileCertCode placeholder="{{'MOBILE_CERT_CODE' | translate}}"/>
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-2 flex-align-mid">
+                                                                <i *ngIf="mobileCodeChecked && mobileActivated" class="fa fa-check fa-2x"></i>
+                                                                <i *ngIf="mobileCodeChecked && !mobileActivated" class="fa fa-times fa-2x"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 flex-vertical-align">
+                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="requestMobileCode()" [disabled]="mobileCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                    </div>
+                                                    <div class="col-md-4 flex-vertical-align">
+                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="activateMobile(mobileCertCode.value)">{{'CERTIFICATION' | translate}}</button>
+                                                    </div>
+
+                                                    <div class="col-12" *ngIf="mobileCodeSent && !mobileCertCodeActivated">
+                                                        <p><i>{{ 'MOBILE_CODE_SENT' | translate: {mobile:eponymousReportForm.controls.mobile.value} }}</i></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row stepper_nav_buttons">
+                            <div class="col-6 text-left">
+                                <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                            </div>
+                            <div class="col-6 text-right">
+                                <button mat-raised-button color="primary" matStepperNext [disabled]="!checkActivatedGuards()">{{'NEXT' | translate}}</button>
+                            </div>
+                        </div>
+                    </mat-step>
+
+                    <mat-step>
+                        <ng-template matStepLabel>{{'SUBSCRIPTION' | translate}}</ng-template>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form_header">
+                                        {{'SUBMIT_SUBSCRIPTION_HEADER' | translate}}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                      <label for="exampleFormControlTextarea1">{{'COMMENT' | translate}}</label>
+                                      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" [(ngModel)]="commentText"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label >{{'FILES' | translate}}</label>
+                                </div>
+                                <div class="col-12">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <label for="inputGroupFile01" class="input-group-text" style="padding: 5px 12px; font-size:inherit">{{'BROWSE' | translate}}
+                                                <input type="file" multiple class="custom-file-input" id="inputGroupFile01" (change)="fileUploadHandler($event.target.files)" style="display:none">
+                                            </label>
+                                        </div>
+                                        <div class="form-control flex-input-group">
+                                            <span *ngIf="fileNamesArray.length == 1">{{fileNamesArray[0]}}</span>
+                                            <span *ngIf="fileNamesArray.length > 1" matTooltip="{{fileNamesArray.join('&#013;&#010;')}}" [matTooltipClass]="{'example-tooltip-host':true}">{{fileNamesArray.length}} {{'FILES' | translate | lowercase}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 subscibe-button text-center">
+                                    <button mat-raised-button color="basic" style="background-color:#eee" (click)="sendIssueReport()" [disabled]="issueReportSent">{{'SUBMIT_SUBSCRIPTION' | translate}}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row stepper_nav_buttons">
+                            <div class="col-6 text-left">
+                                <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                            </div>
+                        </div>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,6 +33,7 @@
                 "../node_modules/leaflet.markercluster/dist/MarkerCluster.css",
                 "../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
                 "../node_modules/ngx-toastr/toastr.css",
+                "../node_modules/angular2-lightbox/lightbox.css",
                 "styles.scss"
             ],
             "scripts": [

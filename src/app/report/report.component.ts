@@ -282,6 +282,19 @@ export class ReportComponent implements OnInit {
         )
     }
 
+    checkEponymoys(changeEvent) {
+        console.log(changeEvent.checked)
+        if (changeEvent.checked == false) {
+            // console.log(this.eponymousReportForm)
+            this.eponymousReportForm.get('fullname').clearValidators()
+            this.eponymousReportForm.get('fullname').updateValueAndValidity()
+            this.eponymousReportForm.get('email').clearValidators()
+            this.eponymousReportForm.get('email').updateValueAndValidity()
+            this.eponymousReportForm.get('mobile').clearValidators()
+            this.eponymousReportForm.get('mobile').updateValueAndValidity()
+        }
+    }
+
     //
     //  --- END OF STEP 2 - EPONYMOUS REPORT ---
     //
@@ -523,7 +536,7 @@ export class ReportComponent implements OnInit {
                 data => {
                     console.log(data);
                     if (data.message == "OK") {
-                        this.toastr.success(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
+                        this.toastr.success(this.translationService.get_instant('ISSUE_SUB_SUCCESS'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
                     } else {
                         this.toastr.error(this.translationService.get_instant('SMS_NOT_SUPPORTED_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
                     }

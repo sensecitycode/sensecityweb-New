@@ -12,6 +12,7 @@ export class AppBootStrapComponent implements OnInit{
     constructor(private route: ActivatedRoute,private issuesService: IssuesService) {}
 
     public API:string
+    public API_HOST:string;
     public STATISTICS_URL:string;
     public GOOGLE_KEY:string;
     public TWITTER_WIDGET_IDS:object;
@@ -19,6 +20,7 @@ export class AppBootStrapComponent implements OnInit{
     ngOnInit() {
         // console.log(this.router)
         this.API = this.route.snapshot.data['envSpecific'].API;
+        this.API_HOST = this.route.snapshot.data['envSpecific'].API_HOST;
         this.STATISTICS_URL = this.route.snapshot.data['envSpecific'].TEMP_STATISTICS;
         this.GOOGLE_KEY = this.route.snapshot.data['envSpecific'].GOOGLE_KEY;
         this.TWITTER_WIDGET_IDS = this.route.snapshot.data['envSpecific'].TWITTER_WIDGET_IDS;
@@ -40,6 +42,7 @@ export class AppBootStrapComponent implements OnInit{
         }
 
         this.issuesService.API = this.API
+        this.issuesService.API_HOST = this.API_HOST
         this.issuesService.googleKey = this.GOOGLE_KEY
     }
 }

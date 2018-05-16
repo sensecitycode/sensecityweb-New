@@ -34,6 +34,7 @@
     "@types/leaflet": "^1.2.7",
     "@types/leaflet.awesome-markers": "^2.0.23",
     "@types/leaflet.markercluster": "^1.0.3",
+    "angular2-lightbox": "^1.4.0",
     "bootstrap": "^4.1.0",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",

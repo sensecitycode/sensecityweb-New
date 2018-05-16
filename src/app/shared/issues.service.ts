@@ -17,6 +17,7 @@ export class IssuesService {
     uuid:string;
     city:string;
     API:string;
+    API_HOST:string;
     googleKey:string;
     twitterId:string;
     cityCenter:{
@@ -89,6 +90,10 @@ export class IssuesService {
 
     fetch_fixed_points() {
         return this.httpClient.get<any>(`assets/env-specific/dev/${this.city}.json`)
+    }
+
+    fetch_nearby_fixed_points(long, lat, type) {
+        return this.httpClient.get<any>(`${this.API_HOST}/fix_point/${long}/${lat}/50/${type}`)
     }
 
     fetch_city_boundaries() {
@@ -166,6 +171,12 @@ export class IssuesService {
     issue_subscribe (subscription) {
         console.log(subscription)
         return this.httpClient.post<any>(`${this.API}/issue_subscribe`, subscription)
+    }
+
+    issue_subscribe_register (subscription, files) {
+        console.log(subscription)
+        console.log(files)
+        return this.httpClient.post<any>(`${this.API}/issue_register`, files, { params:subscription})
     }
 
 

@@ -19,6 +19,7 @@ import localeEl from '@angular/common/locales/el';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletMarkerClusterModule } from '@asymmetrik/ngx-leaflet-markercluster';
 import { NguCarouselModule } from '@ngu/carousel';
+import { LightboxModule } from 'angular2-lightbox'
 
 
 
@@ -34,7 +35,8 @@ import {MatButtonModule,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        MatCheckboxModule} from '@angular/material';
+        MatCheckboxModule,
+        MatTooltipModule} from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { AppBootStrapComponent } from './app-bootstrap.component';
@@ -44,6 +46,7 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { BoundariesComponent } from './boundaries/boundaries.component';
 import { ReportComponent } from './report/report.component';
+import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
 
 export function HttpLoaderFactory(httpclient:HttpClient) {
     return new TranslateHttpLoader(httpclient, './assets/i18n/', '.json');
@@ -58,7 +61,8 @@ registerLocaleData(localeEl);
         HeaderComponent,
         FooterComponent,
         BoundariesComponent,
-        ReportComponent
+        ReportComponent,
+        IssueTimelineComponent
     ],
     imports: [
         BrowserModule,
@@ -76,6 +80,7 @@ registerLocaleData(localeEl);
         MatFormFieldModule,
         MatSelectModule,
         MatCheckboxModule,
+        MatTooltipModule,
         NgProgressModule.forRoot(),
         NgProgressHttpModule,
         CommonModule,
@@ -91,7 +96,8 @@ registerLocaleData(localeEl);
         }),
         LeafletModule,
         LeafletMarkerClusterModule,
-        NguCarouselModule
+        NguCarouselModule,
+        LightboxModule
     ],
     providers: [TranslationService, {provide: LOCALE_ID, deps:[TranslationService], useFactory: (TranslationService) => TranslationService.getLanguage()}, IssuesService],
     bootstrap: [AppComponent]

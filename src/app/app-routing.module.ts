@@ -7,6 +7,7 @@ import { EnvironmentSpecificService } from './envSpecific/environment-specific-s
 import { OverviewComponent } from './overview/overview.component';
 import { BoundariesComponent } from './boundaries/boundaries.component';
 import { ReportComponent } from './report/report.component';
+import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
 
 
 const appRoutes: Routes = [
@@ -14,6 +15,7 @@ const appRoutes: Routes = [
         { path: 'overview', component: OverviewComponent },
         { path: 'boundaries', component: BoundariesComponent },
         { path: 'report', component: ReportComponent },
+        { path: 'issue/:id', component: IssueTimelineComponent},
         // { path: 'signup', component: SignupComponent},
         // { path: 'login', component: LoginComponent},
         // { path: 'dashboard', component: DashboardComponent, canActivate:[AuthGuardService], children:[

@@ -94,7 +94,7 @@
 
                                         <div class="row stepper_nav_buttons">
                                             <div class="col-12 text-right">
-                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled" (click)="display(issueReportForm.controls.issue_misc_desc)">{{'NEXT' | translate}}</button>
+                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -113,7 +113,7 @@
                                         <div *ngIf="issueCityPolicy?.add_issue == 1">
                                             <div class="row" >
                                                 <div class="col-md-6" >
-                                                    <mat-checkbox [(ngModel)]="eponymousCheckbox" color="primary">{{'EPONYMOUS_REPORT' | translate}}</mat-checkbox>
+                                                    <mat-checkbox [(ngModel)]="eponymousCheckbox" color="primary" #eponymousCheckboxRef (change)="checkEponymoys($event)">{{'EPONYMOUS_REPORT' | translate}}</mat-checkbox>
                                                 </div>
                                             </div>
                                             <div class="row" *ngIf='eponymousCheckbox'>
@@ -337,7 +337,7 @@
                             </mat-horizontal-stepper>
                         </div>
                         <!-- {{imageName}} {{imageUrl}} -->
-                        {{emailChecked}} {{smsChecked}} {{issueReportForm.get('comment').value}}
+                        {{emailChecked}} {{smsChecked}} {{eponymousCheckbox}}
                     </div>
                 </div>
             <!-- </div> -->
