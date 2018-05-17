@@ -1,0 +1,37 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12 " *ngFor = 'let issue of issues; let issue_index = index'>
+            <div class="card">
+                <div class="carousel-image-container">
+                    <div class="carousel-image">
+                        <img *ngIf="!issue.broken_image" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
+                        <i *ngIf="issue.broken_image" class="fa {{issue.icon}}" style="font-size:9.5em"></i>
+                    </div>
+
+                    <div>
+                        <b>{{issue.issue | uppercase | translate}}</b>
+                    </div>
+                    <div class="category-desc">
+                        {{issue.value_desc}}
+                    </div>
+                </div>
+
+
+                <div class="card-content">
+                    <p class="category"><small><span class="fa fa-cog icon-margin"></span>{{ 'STATUS' | translate }}</small><br /></p>
+                    <p class="category-desc category-desc-carousel">{{ issue.status | uppercase | translate }}</p>
+
+                    <p class="category"><small><span class="fa fa-clock-o icon-margin"></span>{{ 'REPORTED' | translate }}</small><br /></p>
+                    <p class="category-desc category-desc-carousel">{{ issue.created_ago }}</p>
+
+                    <p class="category"><a [routerLink]="['/issue',issue._id]"><small><span class="fa fa-info-circle icon-margin"></span>{{ 'DETAILS' | translate }}...</small></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <button mat-raised-button (click)="loadMoreIssues()" *ngIf='!requestGuard'>{{'LOAD_MORE' | translate}} </button>
+        </div>
+    </div>
+</div>

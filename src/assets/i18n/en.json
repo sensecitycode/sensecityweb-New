@@ -129,6 +129,7 @@
     "SUBMIT_SUBSCRIPTION_HEADER":"By subscribing to the issue, you can optionally submit comments and files",
     "SUBMIT_SUBSCRIPTION":"Subscription to issue",
     "FILES":"Files",
+    "LOAD_MORE":"Load more",
 
     "ISSUE_SUBTYPES":
     {

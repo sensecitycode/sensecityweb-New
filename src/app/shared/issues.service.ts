@@ -54,6 +54,19 @@ export class IssuesService {
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
     }
 
+    fetch_limited_issues(_limit, _offset) {
+        console.log("fetch_issues")
+        let reqparams = {
+            city: this.city,
+            startdate: "2017-01-01",
+            limit: _limit,
+            offset: _offset,
+            sort: "-1"
+        }
+        console.log(reqparams)
+        return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
+    }
+
     fetch_last_6_issues() {
         console.log("fetch_last_6_issues")
 

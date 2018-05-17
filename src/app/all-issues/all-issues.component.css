@@ -1,0 +1,51 @@
+.container-fluid {
+    min-height: calc(100vh - 176px);
+}
+
+.carousel-image-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 1em 0;
+    text-align: center;
+    color: #fff;
+    min-height: 16em;
+    height: 16em;
+}
+
+.carousel-image {
+    min-height: 11em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+img {
+    border: 2px solid #FFF;
+    border-radius: 15%;
+}
+
+.category {
+    margin-bottom: 0;
+}
+
+.category-desc {
+    opacity: .85;
+    font-size: 13px;
+}
+
+.category-desc-carousel {
+    margin-bottom:0.5rem;
+}
+
+.card .card-content {
+    padding: 10px 20px;
+}
+
+small {
+    font-weight: bold
+}
+
+button {
+    background-color: #fff;
+    margin: 25px 0;
+    padding: 5px 20px;
+}

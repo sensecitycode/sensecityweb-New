@@ -47,6 +47,7 @@ import { FooterComponent } from './footer/footer.component';
 import { BoundariesComponent } from './boundaries/boundaries.component';
 import { ReportComponent } from './report/report.component';
 import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
+import { AllIssuesComponent } from './all-issues/all-issues.component';
 
 export function HttpLoaderFactory(httpclient:HttpClient) {
     return new TranslateHttpLoader(httpclient, './assets/i18n/', '.json');
@@ -62,7 +63,8 @@ registerLocaleData(localeEl);
         FooterComponent,
         BoundariesComponent,
         ReportComponent,
-        IssueTimelineComponent
+        IssueTimelineComponent,
+        AllIssuesComponent
     ],
     imports: [
         BrowserModule,

@@ -8,6 +8,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { BoundariesComponent } from './boundaries/boundaries.component';
 import { ReportComponent } from './report/report.component';
 import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
+import { AllIssuesComponent } from './all-issues/all-issues.component'
 
 
 const appRoutes: Routes = [
@@ -16,6 +17,7 @@ const appRoutes: Routes = [
         { path: 'boundaries', component: BoundariesComponent },
         { path: 'report', component: ReportComponent },
         { path: 'issue/:id', component: IssueTimelineComponent},
+        { path: 'issues', component: AllIssuesComponent },
         // { path: 'signup', component: SignupComponent},
         // { path: 'login', component: LoginComponent},
         // { path: 'dashboard', component: DashboardComponent, canActivate:[AuthGuardService], children:[
