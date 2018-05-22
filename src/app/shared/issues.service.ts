@@ -61,7 +61,8 @@ export class IssuesService {
             startdate: "2017-01-01",
             limit: _limit,
             offset: _offset,
-            sort: "-1"
+            sort: "-1",
+            status: "CONFIRMED|IN_PROGRESS|RESOLVED"
         }
         console.log(reqparams)
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
@@ -83,13 +84,14 @@ export class IssuesService {
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
     }
 
-    fetch_feelings(_enddate,_startdate) {
+    fetch_feelings(_enddate,_startdate,_feeling) {
         console.log("fetch_feelings")
 
         let reqparams = {
             city: this.city,
             startdate: _startdate,
-            enddate: _enddate
+            enddate: _enddate,
+            feeling: _feeling
         }
         console.log(reqparams)
 
@@ -99,6 +101,12 @@ export class IssuesService {
     fetch_fullIssue(issueID) {
         console.log("fetch_fullIssue")
         return this.httpClient.get<any>(`${this.API}/fullissue/${issueID}`)
+    }
+
+    search_issue(searchParams){
+        searchParams['city'] = this.city
+        console.log(searchParams)
+        return this.httpClient.get<any>(`${this.API}/issue`, {params:searchParams})
     }
 
     fetch_fixed_points() {

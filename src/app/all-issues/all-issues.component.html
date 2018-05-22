@@ -31,7 +31,7 @@
     </div>
     <div class="row">
         <div class="col-12 text-center">
-            <button mat-raised-button (click)="loadMoreIssues()" *ngIf='!requestGuard'>{{'LOAD_MORE' | translate}} </button>
+            <button mat-raised-button (click)="loadMoreIssues()"  [ngStyle]="{'visibility':requestGuard ? 'hidden' : 'visible'}">{{'LOAD_MORE' | translate}} </button>
         </div>
     </div>
 </div>

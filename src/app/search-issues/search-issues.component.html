@@ -1,0 +1,133 @@
+<div class="container-fluid">
+    <div class="row card category">
+        <div class="col-12">
+            <div class="card-body">
+                <form [formGroup]="searchForm">
+                    <div class="row">
+
+                        <div class="col-lg-2">
+                            <mat-form-field class="full-width">
+                                <mat-select placeholder="{{'ISSUE' | translate}}" formControlName="issue" multiple>
+                                    <mat-select-trigger>
+                                        {{searchForm.controls.issue.value.length > 0 ? (searchForm.controls.issue.value[0].type | uppercase | translate) : '' }}
+                                        <span *ngIf="searchForm.controls.issue.value?.length > 1" class="example-additional-selection">
+                                            (+{{searchForm.controls.issue.value.length - 1}} {{ 'OTHER' | translate }})
+                                        </span>
+                                    </mat-select-trigger>
+                                    <mat-option *ngFor="let issue of issue_types" [value]="issue">
+                                        <span class = "fa {{issue.icon}}"></span> {{issue.type | uppercase | translate}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <mat-form-field class="full-width">
+                                <mat-select placeholder="{{'STATUS' | translate}}" formControlName="status" multiple>
+                                    <!-- <mat-select-trigger>
+                                        {{searchForm.controls.issue.value.length > 0 ? (searchForm.controls.issue.value[0].type | uppercase | translate) : '' }}
+                                        <span *ngIf="searchForm.controls.issue.value?.length > 1" class="example-additional-selection">
+                                            (+{{searchForm.controls.issue.value.length - 1}} {{ 'OTHER' | translate }})
+                                        </span>
+                                    </mat-select-trigger> -->
+                                    <mat-option *ngFor="let status of status_types" [value]="status">
+                                        <span class = "fa {{status.icon}}"></span> {{status.translateVar | uppercase | translate}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <mat-form-field class="full-width">
+                                <mat-select placeholder="{{'CITIZEN_MOOD' | translate}}" formControlName="feelings" multiple>
+                                    <!-- <mat-select-trigger>
+                                        {{searchForm.controls.issue.value.length > 0 ? (searchForm.controls.issue.value[0].type | uppercase | translate) : '' }}
+                                        <span *ngIf="searchForm.controls.issue.value?.length > 1" class="example-additional-selection">
+                                            (+{{searchForm.controls.issue.value.length - 1}} {{ 'OTHER' | translate }})
+                                        </span>
+                                    </mat-select-trigger> -->
+                                    <mat-option *ngFor="let feeling of feelings_types" [value]="feeling">
+                                        <span class = "fa {{feeling.icon}}"></span> {{feeling.type | uppercase | translate}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="row">
+                                <mat-form-field class="col-sm-6">
+                                    <input matInput [matDatepicker]="startDate" placeholder="{{'FROM' | translate}}" formControlName="startDate">
+                                    <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [touchUi]="observableMedia.isActive('lt-md')" #startDate></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field class="col-sm-6">
+                                    <input matInput [matDatepicker]="endDate" placeholder="{{'UNTIL' | translate}}" formControlName="endDate">
+                                    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                                    <mat-datepicker [touchUi]="observableMedia.isActive('lt-md')" #endDate></mat-datepicker>
+                                </mat-form-field>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="row">
+                                <mat-form-field class="col-xl-6 col-lg-5">
+                                    <input matInput placeholder="{{'ISSUE_ID' | translate}}" formControlName="bugId"/>
+                                    <mat-hint>{{'ISSUE_ID_HINT' | translate}}</mat-hint>
+                                </mat-form-field>
+
+
+                                <div class="col-xl-6 col-lg-7 flex-align-mid">
+                                    <button mat-raised-button class="btn-light" (click)="submitSearch()" color="primary">{{'SEARCH' | translate}} </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header" >
+                    <p class="category">{{'SEARCH_ISSUES' | translate}}</p>
+                    <p class="category category-desc">{{'SEARCH_DESC' | translate}}</p>
+                </div>
+
+                <div style="min-height:500px; height:calc(100vh - 297px)" id="issuesmap"
+                leaflet
+                (leafletMapReady)="onMapReady($event)"
+                [leafletOptions]="mapInit"
+                [leafletLayers]="mapLayers"
+                [leafletLayersControl]="layersControl"
+                >
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header" >
+                    <p class="category">{{'STATISTICS' | translate}}</p>
+                    <p class="category category-desc">{{'STATISTICS_DESC' | translate}}</p>
+                </div>
+                <div class="card-body">
+                    <div *ngFor = "let issue of issue_types; let last = last" class="flex-space-between statistics-items">
+                        {{ issue.type | uppercase | translate }} <span class="text-right statistics-number ">{{markersObject[issue.markers].length}}</span>
+                    </div>
+                    <div class="flex-space-between statistics-items" style="padding-bottom:0">
+                        {{ 'CITIZEN_MOOD' | translate }} <span class="text-right statistics-number ">{{markersObject['feelings_markers'].length}}</span>
+                    </div>
+                    <hr />
+                    <div class="flex-space-between">
+                        {{'TOTAL' | translate}} <span class="text-right statistics-number total">{{totalSearchIssues}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

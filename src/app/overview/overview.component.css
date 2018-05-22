@@ -8,15 +8,6 @@
 
 }
 
-.category {
-    margin-bottom: 0;
-}
-
-.category-desc {
-    opacity: .85;
-    font-size:13px;
-}
-
 .category-desc .material-icons {
     position: relative;
     top: 2px;

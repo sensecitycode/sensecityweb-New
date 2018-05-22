@@ -181,11 +181,11 @@ export class OverviewComponent implements OnInit {
                     this.layersControl['overlays'] = {
                         [this.translationService.get_instant('GARBAGE')]: L.layerGroup(garbage_markers),
                         [this.translationService.get_instant('LIGHTING')]: L.layerGroup(lighting_markers),
-                        [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
                         [this.translationService.get_instant('ROAD-CONSTRUCTOR')]: L.layerGroup(road_markers),
                         [this.translationService.get_instant('PROTECTION-POLICY')]: L.layerGroup(protection_markers),
                         [this.translationService.get_instant('GREEN')]: L.layerGroup(green_markers),
-                        [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers)
+                        [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers),
+                        [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
                     }
                     // this.mapLayers = [this.layersControl['overlays'][this.translationService.get_instant('GARBAGE')]]
                     for (let layer in this.layersControl['overlays']) {
@@ -193,10 +193,6 @@ export class OverviewComponent implements OnInit {
                     }
 
                     this.layersControl['overlays'][this.translationService.get_instant('CITIZEN_MOOD')] = L.layerGroup(this.feelingsMarkers)
-
-
-
-
 
 
                 }
@@ -232,7 +228,7 @@ export class OverviewComponent implements OnInit {
             )
 
         // console.log('fetch feelings last 7 days')
-        this.issuesService.fetch_feelings(today, sevenDaysAgo)
+        this.issuesService.fetch_feelings(today, sevenDaysAgo, 'happy|neutral|angry')
             .subscribe(
                 data => { this.feelingsLast7days = data },
                 error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),

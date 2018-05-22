@@ -123,15 +123,6 @@ h3 {
     font-size: 15px;
 }
 
-.category {
-    margin-bottom: 0;
-}
-
-.category-desc {
-    opacity: .85;
-    font-size:13px;
-}
-
 .red {
     background-color: #F44336 !important;
 }

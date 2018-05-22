@@ -37,6 +37,24 @@ body {
 
 
 /*  */
+/* OVERIDE ANGULAR MATERIAL */
+/*  */
+
+.mat-select-panel {
+    max-height: fit-content !important;
+}
+
+.mat-pseudo-checkbox-checked::after {
+    top: 6px !important;
+    left: 4px !important;
+}
+/*  */
+/*  */
+/*  */
+
+
+
+/*  */
 /* GLOBAL CONTENT */
 /*  */
 .card {
@@ -91,6 +109,16 @@ body {
 /*  */
 /* GLOBAL CONTENT CUSTOM CARD */
 /*  */
+.category {
+    margin-bottom: 0;
+}
+
+.category-desc {
+    opacity: .85;
+    font-size:13px;
+}
+
+
 
 .icon-margin {
     margin-right:0.2em;
@@ -100,6 +128,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
 }
 
 .flex-vertical-align {

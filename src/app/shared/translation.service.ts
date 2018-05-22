@@ -15,11 +15,11 @@ export class TranslationService {
 
     switchLanguage(language: string) {
         this.translate.use(language);
-        this.languageChanged.next("language changed to: " + language);
+        this.languageChanged.next(language);
     }
 
     getLanguage() {
-        console.log(this.translate.currentLang)
+        // console.log(this.translate.currentLang)
         return this.translate.currentLang;
     }
 
