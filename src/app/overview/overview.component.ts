@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone } from '@angular/core';
 
 import { ToastrService } from 'ngx-toastr';
 
 import { TranslationService } from '../shared/translation.service';
 import { IssuesService } from '../shared/issues.service';
+import { PopupComponent } from '../shared/popup/popup.component'
+
 
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -26,8 +28,15 @@ import { NguCarousel } from '@ngu/carousel';
 })
 export class OverviewComponent implements OnInit {
 
-    constructor(private translationService: TranslationService, private issuesService: IssuesService, private toastr: ToastrService) { }
+    constructor(private translationService: TranslationService,
+                private issuesService: IssuesService,
+                private toastr: ToastrService,
+                private resolver: ComponentFactoryResolver,
+                private injector: Injector,
+                private appRef: ApplicationRef,
+                private zone: NgZone) { }
 
+    compRef: ComponentRef<PopupComponent>;
     initial_language = this.translationService.getLanguage()
 
     last_months_params:object
@@ -115,7 +124,7 @@ export class OverviewComponent implements OnInit {
                             markerColor: 'red',
                             prefix: 'fa',
                         })
-                        let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup('<div class="loader" style="border: 5px solid #f3f3f3; border-top: 5px solid #555; border-radius: 50%; animation: spin 1s linear infinite; width: 50px; height: 50px;"></div>');;
+                        let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup(null);;
                         switch (element.issue) {
                             case 'garbage':
                                 // console.log('garbage');
@@ -146,35 +155,7 @@ export class OverviewComponent implements OnInit {
                                 environment_markers.push(issueMarker)
                         }
                         issueMarker.on('click', ev => {
-                            console.log(ev)
-                            console.log(ev.target.options.alt)
-                            console.log(issueMarker.getPopup())
-                            if (ev.target.options.alt != undefined) {
-                                let issue_data:any
-
-                                this.issuesService.fetch_fullIssue(ev.target.options.alt)
-                                .subscribe(
-                                    data =>{ issue_data = data[0] },
-                                    error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
-                                    () => {
-                                        console.log(issue_data)
-                                        console.log(issue_data.issue)
-                                        let popup = ev.target.getPopup()
-                                        let iconClass = `fa ${this.issuesService.get_issue_icon(issue_data.issue)}`
-                                        let imageFetchURL = this.issuesService.API + "/image_issue?bug_id=" + issue_data.bug_id + "&resolution=small"
-                                        console.log(imageFetchURL)
-                                        popup.setContent(`
-                                            <center style='width:200px'>
-                                                <b>${this.translationService.get_instant(issue_data.issue.toUpperCase())}</b>
-                                                <br>${issue_data.value_desc}
-                                                <br>
-                                                <i class="${iconClass}" style="font-size:12em;color:black"></i>
-                                            </center>
-                                            `);
-                                    }
-
-                                )
-                            }
+                            this.createMarkerPopup (issueMarker, ev)
                         })
                     })
 
@@ -338,5 +319,38 @@ export class OverviewComponent implements OnInit {
 
     imageLoadError(image_index) {
         this.brokenImages[image_index] = true;
+    }
+
+    createMarkerPopup (issueMarker, ev) {
+        if (issueMarker.isPopupOpen() == true) {
+            this.zone.run( () => {
+                console.log(ev)
+                console.log(issueMarker)
+
+                if(this.compRef) this.compRef.destroy();
+
+                const compFactory = this.resolver.resolveComponentFactory(PopupComponent);
+                this.compRef = compFactory.create(this.injector);
+
+                this.compRef.instance.issueId = ev.target.options.alt;
+                const subscription = this.compRef.instance.fullIssueFetched.subscribe(
+                    data => {
+                        if (data) {
+                            setTimeout(()=> {issueMarker.getPopup().update()}, 1)
+                        }
+                    }
+                )
+
+                let div = document.createElement('div');
+                div.appendChild(this.compRef.location.nativeElement);
+                issueMarker.setPopupContent(div);
+
+                this.appRef.attachView(this.compRef.hostView);
+                this.compRef.onDestroy(() => {
+                    this.appRef.detachView(this.compRef.hostView);
+                    subscription.unsubscribe();
+                });
+            })
+        }
     }
 }

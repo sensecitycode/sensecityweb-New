@@ -1,0 +1,16 @@
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+img {
+    max-height:200px;
+    max-width:100%;
+    border-radius:2%;
+    margin: 12px 0;
+}
+
+i {
+    font-size:12em;
+    color:rgba(0, 0, 0, 0.9)
+}

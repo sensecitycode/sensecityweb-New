@@ -55,6 +55,7 @@ import { ReportComponent } from './report/report.component';
 import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
 import { AllIssuesComponent } from './all-issues/all-issues.component';
 import { SearchIssuesComponent } from './search-issues/search-issues.component';
+import { PopupComponent } from './shared/popup/popup.component';
 
 export function HttpLoaderFactory(httpclient:HttpClient) {
     return new TranslateHttpLoader(httpclient, './assets/i18n/', '.json');
@@ -72,7 +73,11 @@ registerLocaleData(localeEl);
         ReportComponent,
         IssueTimelineComponent,
         AllIssuesComponent,
-        SearchIssuesComponent
+        SearchIssuesComponent,
+        PopupComponent
+    ],
+    entryComponents: [
+        PopupComponent
     ],
     imports: [
         BrowserModule,

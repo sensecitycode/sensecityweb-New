@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone  } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DateAdapter } from '@angular/material/core';
@@ -28,6 +28,7 @@ export const MY_FORMATS = {
   },
 };
 
+import { PopupComponent } from '../shared/popup/popup.component'
 
 @Component({
     selector: 'app-search-issues',
@@ -43,8 +44,13 @@ export class SearchIssuesComponent implements OnInit {
         private issuesService: IssuesService,
         private toastr: ToastrService,
         private dateAdapter: DateAdapter<any>,
-        private observableMedia: ObservableMedia) { }
+        private observableMedia: ObservableMedia,
+        private resolver: ComponentFactoryResolver,
+        private injector: Injector,
+        private appRef: ApplicationRef,
+        private zone: NgZone) { }
 
+    compRef: ComponentRef<PopupComponent>;
     mapInit: {};
 
     mapLayers = [];
@@ -163,8 +169,12 @@ export class SearchIssuesComponent implements OnInit {
                             markerColor: 'red',
                             prefix: 'fa',
                         })
-                        let issueMarker = new L.Marker([issueSearchResult[0].loc.coordinates[1],issueSearchResult[0].loc.coordinates[0]], {icon: AwesomeMarker, alt:issueSearchResult[0]._id}).bindPopup('<div class="loader" style="border: 5px solid #f3f3f3; border-top: 5px solid #555; border-radius: 50%; animation: spin 1s linear infinite; width: 50px; height: 50px;"></div>');;
+                        let issueMarker = new L.Marker([issueSearchResult[0].loc.coordinates[1],issueSearchResult[0].loc.coordinates[0]], {icon: AwesomeMarker, alt:issueSearchResult[0]._id}).bindPopup(null);
                         this.mapLayers.push(issueMarker)
+
+                        issueMarker.on('click', ev => {
+                            this.createMarkerPopup (issueMarker, ev)
+                        })
 
                     }
                 }
@@ -256,9 +266,13 @@ export class SearchIssuesComponent implements OnInit {
                                 })
                             }
 
-                            let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup('<div class="loader" style="border: 5px solid #f3f3f3; border-top: 5px solid #555; border-radius: 50%; animation: spin 1s linear infinite; width: 50px; height: 50px;"></div>');;
+                            let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup(null);;
 
                             this.markersObject[markerName].push(issueMarker)
+
+                            issueMarker.on('click', ev => {
+                                this.createMarkerPopup (issueMarker, ev)
+                            })
                         })
                         if (searchIssueResults.length > 0) {
                             this.layersControl['overlays'][this.translationService.get_instant(type.toUpperCase())] = L.layerGroup(this.markersObject[markerName])
@@ -282,6 +296,39 @@ export class SearchIssuesComponent implements OnInit {
 
         // console.log(searchObj)
         // console.log(feelingsObj)
+    }
+
+    createMarkerPopup (issueMarker, ev) {
+        if (issueMarker.isPopupOpen() == true) {
+            this.zone.run( () => {
+                console.log(ev)
+                console.log(issueMarker)
+
+                if(this.compRef) this.compRef.destroy();
+
+                const compFactory = this.resolver.resolveComponentFactory(PopupComponent);
+                this.compRef = compFactory.create(this.injector);
+
+                this.compRef.instance.issueId = ev.target.options.alt;
+                const subscription = this.compRef.instance.fullIssueFetched.subscribe(
+                    data => {
+                        if (data) {
+                            setTimeout(()=> {issueMarker.getPopup().update()}, 1)
+                        }
+                    }
+                )
+
+                let div = document.createElement('div');
+                div.appendChild(this.compRef.location.nativeElement);
+                issueMarker.setPopupContent(div);
+
+                this.appRef.attachView(this.compRef.hostView);
+                this.compRef.onDestroy(() => {
+                    this.appRef.detachView(this.compRef.hostView);
+                    subscription.unsubscribe();
+                });
+            })
+        }
     }
 
     onMapReady(map: L.Map) {

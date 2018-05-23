@@ -1,0 +1,11 @@
+<div *ngIf='loading' class="loader" style="border: 5px solid #f3f3f3; border-top: 5px solid #555; border-radius: 50%; animation: spin 1s linear infinite; width: 50px; height: 50px;"></div>
+
+<div *ngIf='!loading' class="text-center" style="width:200px">
+    <b>{{issue?.issue | uppercase | translate}}</b>
+    <div>{{issue?.value_desc}}</div>
+
+    <img *ngIf="!imageBroken" [src]="issue?.imageUrl" (error)="imageLoadError()" [style]=""/>
+    <i *ngIf="imageBroken" class="{{issue?.icon}}" ></i>
+
+    <p class="category" style="margin:0"><a [routerLink]="['/issue',issue?._id]"><span class="fa fa-info-circle icon-margin"></span>{{ 'ISSUE_PROGRESS' | translate }}!</a></p>
+</div>
