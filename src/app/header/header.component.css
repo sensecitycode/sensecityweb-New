@@ -12,7 +12,7 @@
     font-weight: bold;
 }
 
-span:focus {
+div:focus {
     /* color: white; */
     outline: none;
 }
@@ -29,18 +29,18 @@ mat-toolbar {
 
 .ion-ios-analytics-outline {
     margin-right: 8px;
-    vertical-align: middle; */
-    display: flex;
-    align-content: center;
-    justify-content: center;
 }
 
 .logo {
-    padding: 15px 45px !important;
+    padding: 0 45px !important;
     background-color: rgba(0, 0, 0, 0.6);
     font-size: 20px !important;
     border-radius: 0px !important;
     cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .header ul {

@@ -1,22 +1,21 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone } from '@angular/core';
+import { PopupComponent } from '../shared/popup/popup.component'
 
 import { ToastrService } from 'ngx-toastr';
-
 import { TranslationService } from '../shared/translation.service';
 import { IssuesService } from '../shared/issues.service';
-import { PopupComponent } from '../shared/popup/popup.component'
+import { NgProgress } from '@ngx-progressbar/core';
+import { NguCarousel } from '@ngu/carousel';
 
 
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
+import 'leaflet.gridlayer.googlemutant';
 
 import * as UntypedL from 'leaflet/dist/leaflet-src'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
 import * as moment from 'moment';
-import { HttpClient } from '@angular/common/http';
-import { NgProgress } from '@ngx-progressbar/core';
-import { NguCarousel } from '@ngu/carousel';
 
 
 
@@ -39,7 +38,7 @@ export class OverviewComponent implements OnInit {
     compRef: ComponentRef<PopupComponent>;
     initial_language = this.translationService.getLanguage()
 
-    last_months_params:object
+    last_months_params:any
     issuesLast7days = []
     feelingsLast7days = []
     allIssuesLastMonths = []
@@ -73,13 +72,30 @@ export class OverviewComponent implements OnInit {
     issueCenter: L.LatLng
     ngOnInit() {
         this.last_months_params = {months:'2'}
-        let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
-        // let garbageLayer = L.layerGroup()
+        let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+
+        let googleRoadMap = UntypedL.gridLayer.googleMutant({
+            type: 'roadmap', // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+            maxZoom: 18
+        })
+        googleRoadMap.addGoogleLayer('TrafficLayer');
+
+        let googleHybrid = UntypedL.gridLayer.googleMutant({
+            type: 'hybrid', // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+            maxZoom: 18
+        })
+
         this.mapInit = {
-            layers: [baseLayer],
+            layers: [openStreetMaps],
             zoom: this.issuesService.cityCenter.zoom,
             center: L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         };
+
+        this.layersControl['baseLayers'] = {
+            'Open Street Maps': openStreetMaps,
+            'Google Maps Traffic': googleRoadMap,
+            'Google Maps Satellite': googleHybrid,
+        }
 
         this.carouselOne = {
             grid: {xs: 1, sm: 1, md: 1, lg: 1, all: 0},

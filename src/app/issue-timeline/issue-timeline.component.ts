@@ -319,7 +319,7 @@ export class IssueTimelineComponent implements OnInit {
         }
     }
 
-    cityPolicy:object
+    cityPolicy:any = {}
     smsChecked = false;
     emailChecked = false;
     fetchCityPolicy(lat,lng) {

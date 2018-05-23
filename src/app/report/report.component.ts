@@ -6,6 +6,7 @@ import { IssuesService } from '../shared/issues.service';
 import { ToastrService } from 'ngx-toastr';
 
 import * as L from 'leaflet';
+import 'leaflet.gridlayer.googlemutant';
 import * as UntypedL from 'leaflet/dist/leaflet-src'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
@@ -37,6 +38,7 @@ export class ReportComponent implements OnInit {
 
     mapInit: {};
     mapLayers = [];
+    layersControl = {};
     issueZoom:number
     issueCenter: L.LatLng
 
@@ -44,12 +46,30 @@ export class ReportComponent implements OnInit {
     selectedStepIndex = 0
 
     ngOnInit() {
-        let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+        let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+
+        let googleRoadMap = UntypedL.gridLayer.googleMutant({
+            type: 'roadmap',
+            maxZoom: 18
+        })
+        googleRoadMap.addGoogleLayer('TrafficLayer');
+
+        let googleHybrid = UntypedL.gridLayer.googleMutant({
+            type: 'hybrid',
+            maxZoom: 18
+        })
+
         this.mapInit = {
-            layers: [baseLayer],
+            layers: [openStreetMaps],
             zoom: this.issuesService.cityCenter.zoom,
             center: L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         };
+
+        this.layersControl['baseLayers'] = {
+            'Open Street Maps': openStreetMaps,
+            'Google Maps Traffic': googleRoadMap,
+            'Google Maps Satellite': googleHybrid,
+        }
 
         this.issueReportForm = new FormGroup({
             longitude: new FormControl({value: '', disabled: true}, Validators.required),
@@ -266,7 +286,7 @@ export class ReportComponent implements OnInit {
     //  STEP 2 - EPONYMOUS REPORT
     //
 
-    issueCityPolicy:object;
+    issueCityPolicy:any;
     eponymousCheckbox = true;
     smsChecked = false;
     emailChecked = false;

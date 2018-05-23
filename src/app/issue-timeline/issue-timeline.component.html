@@ -117,46 +117,40 @@
                     <mat-step [stepControl]="eponymousReportForm">
                         <ng-template matStepLabel>{{'SUBSCRIPTION_FORM_STEP' | translate}}</ng-template>
                         <div class="container-fluid">
+
                             <div class="row">
-                                <div class="col-12">
-                                    <div class="form_header" [innerHTML]="issueCityPolicy?.policy_desc"></div>
+
+                                <div class="col-md-6">
+                                    <form [formGroup]="eponymousReportForm">
+                                        <mat-form-field class="full-width">
+                                            <input matInput placeholder="{{'FULL_NAME' | translate}}" formControlName="fullname" [required]=true/>
+                                            <mat-error *ngIf="eponymousReportForm.controls.fullname.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="full-width">
+                                            <input matInput placeholder="Email" formControlName="email" [required]=emailChecked/>
+                                            <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="full-width">
+                                            <input matInput placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
+                                            <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                        </mat-form-field>
+                                    </form>
                                 </div>
+
+                                <div class="col-md-6 card info_modes_card">
+                                    <div>
+                                        {{'INFO_MODES' | translate}}
+                                    </div>
+
+                                    <div *ngIf = "cityPolicy?.active_sms_service">
+                                        <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
+                                    </div>
+                                    <div>
+                                        <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
+                                    </div>
+                                </div>
+
                             </div>
-
-
-                                <div class="row">
-
-                                    <div class="col-md-6">
-                                        <form [formGroup]="eponymousReportForm">
-                                            <mat-form-field class="full-width">
-                                                <input matInput placeholder="{{'FULL_NAME' | translate}}" formControlName="fullname" [required]=true/>
-                                                <mat-error *ngIf="eponymousReportForm.controls.fullname.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
-                                            </mat-form-field>
-                                            <mat-form-field class="full-width">
-                                                <input matInput placeholder="Email" formControlName="email" [required]=emailChecked/>
-                                                <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
-                                            </mat-form-field>
-                                            <mat-form-field class="full-width">
-                                                <input matInput placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
-                                                <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
-                                            </mat-form-field>
-                                        </form>
-                                    </div>
-
-                                    <div class="col-md-6 card info_modes_card">
-                                        <div>
-                                            {{'INFO_MODES' | translate}}
-                                        </div>
-
-                                        <div *ngIf = "cityPolicy?.active_sms_service">
-                                            <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
-                                        </div>
-                                        <div>
-                                            <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
-                                        </div>
-                                    </div>
-
-                                </div>
 
                         </div>
 

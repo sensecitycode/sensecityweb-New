@@ -10,6 +10,7 @@ import { TranslationService } from '../shared/translation.service';
 import { IssuesService } from '../shared/issues.service';
 
 import * as L from 'leaflet';
+import 'leaflet.gridlayer.googlemutant';
 import * as UntypedL from 'leaflet/dist/leaflet-src'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
@@ -44,7 +45,7 @@ export class SearchIssuesComponent implements OnInit {
         private issuesService: IssuesService,
         private toastr: ToastrService,
         private dateAdapter: DateAdapter<any>,
-        private observableMedia: ObservableMedia,
+        public observableMedia: ObservableMedia,
         private resolver: ComponentFactoryResolver,
         private injector: Injector,
         private appRef: ApplicationRef,
@@ -88,17 +89,35 @@ export class SearchIssuesComponent implements OnInit {
 
     subscription = new Subscription()
     ngOnInit() {
-        let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+        let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
         // let garbageLayer = L.layerGroup()
+        let googleRoadMap = UntypedL.gridLayer.googleMutant({
+            type: 'roadmap',
+            maxZoom: 18
+        })
+        googleRoadMap.addGoogleLayer('TrafficLayer');
+
+        let googleHybrid = UntypedL.gridLayer.googleMutant({
+            type: 'hybrid',
+            maxZoom: 18
+        })
+
         this.mapInit = {
-            layers: [baseLayer],
+            layers: [openStreetMaps],
             zoom: this.issuesService.cityCenter.zoom,
             center: L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         };
-        console.log(this.startDate)
-        console.log(this.startDate.toISOString())
-        console.log(this.endDate)
-        console.log(this.endDate.toISOString())
+
+        this.layersControl['baseLayers'] = {
+            'Open Street Maps': openStreetMaps,
+            'Google Maps Traffic': googleRoadMap,
+            'Google Maps Satellite': googleHybrid,
+        }
+
+        // console.log(this.startDate)
+        // console.log(this.startDate.toISOString())
+        // console.log(this.endDate)
+        // console.log(this.endDate.toISOString())
 
         this.searchForm = new FormGroup({
             issue: new FormControl(this.issue_types),
