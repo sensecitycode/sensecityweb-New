@@ -329,9 +329,10 @@ export class OverviewComponent implements OnInit {
         this.markerClusterGroup = group;
     }
 
-    // carouselReady(event: Event) {
-    //    console.log(event)
-    // }
+    carouselReady(event: Event) {
+       console.log(event)
+       console.log("carousel load")
+    }
 
     imageLoadError(image_index) {
         this.brokenImages[image_index] = true;

@@ -35,6 +35,9 @@ body {
     text-align: center !important;
 }
 
+.mat-step-label {
+    min-width: inherit !important;
+}
 
 
 
@@ -146,4 +149,14 @@ body {
     color: #fff !important;
     background-color: #28a745 !important;
     border-color: #28a745 !important;
+}
+
+.margin-bot-05 {
+    margin-bottom: 0.5rem;
+}
+
+iframe {
+    height: 100% !important;
+    flex: auto;
+    // min-height: 300px !important;
 }

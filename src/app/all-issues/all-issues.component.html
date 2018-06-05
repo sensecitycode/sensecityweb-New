@@ -4,8 +4,10 @@
             <div class="card">
                 <div class="carousel-image-container">
                     <div class="carousel-image">
-                        <img *ngIf="!issue.broken_image" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
-                        <i *ngIf="issue.broken_image" class="fa {{issue.icon}}" style="font-size:9.5em"></i>
+                        <div [routerLink]="['/issue',issue._id]" style="cursor:pointer">
+                            <img *ngIf="!issue.broken_image" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
+                            <i *ngIf="issue.broken_image" class="fa {{issue.icon}}" style="font-size:9.5em"></i>
+                        </div>
                     </div>
 
                     <div>

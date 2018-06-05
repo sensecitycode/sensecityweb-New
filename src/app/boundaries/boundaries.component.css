@@ -1,0 +1,8 @@
+.container-fluid {
+    min-height: calc(100vh - 159px);
+}
+
+.map-container {
+    min-height: 400px;
+    height: calc(100vh - 211px)
+}

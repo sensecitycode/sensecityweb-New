@@ -2,100 +2,125 @@
     <div class="row">
         <div class='col-lg-9'>
             <div class="row">
-                <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="col-xl-3 col-lg-6 col-xs-12">
                     <div class="card card-stats" >
-                        <div class="card-header-custom" >
-                            <!-- <i class="material-icons">person</i> -->
-                            <img src="assets/images/issues.png" alt="">
-                        </div>
-                        <div class="card-content" data-background-color="blue">
-                            <p class="category">{{'ISSUES' | translate}}</p>
-                            <p  class="category-desc">
-                                <!-- <i class="material-icons">date_range</i> -->
-                                {{'LAST_7_DAYS' | translate}}
-                            </p>
+                        <div class="card-content">
+                            <div class="row">
 
-                            <h4 class="title">{{issuesLast7days.length}}<span *ngIf="issuesLast7days.length > 999">+</span></h4>
-                        </div>
-                        <div class="card-footer">
-                            <div class="stats">
-                                {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}}
+
+                                <div class="card-header-custom flex-align-mid col-3" >
+                                    <!-- <i class="material-icons">person</i> -->
+                                    <img src="assets/images/issues.png" alt="">
+                                </div>
+
+                                <div class="col-9">
+                                    <p class="category">{{'ISSUES' | translate }}</p>
+                                    <p  class="category-desc margin-bot-05">
+                                        <!-- <i class="material-icons">date_range</i> -->
+                                        {{'LAST_7_DAYS' | translate}}
+                                    </p>
+
+                                    <h4 class="sum">{{issuesLast7days.length}}<span *ngIf="issuesLast7days.length > 999">+</span></h4>
+                                    <div class="stats">
+                                        {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}}
+                                    </div>
+
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="col-xl-3 col-lg-6 col-xs-12">
                     <div class="card card-stats" >
-                        <div class="card-header-custom" >
-                            <!-- <i class="material-icons">build</i> -->
-                            <img src="assets/images/events.png" alt="">
-                        </div>
-                        <div class="card-content" data-background-color="green">
-                            <p class="category">{{'EVENTS' | translate}}</p>
-                            <!-- {{'CONFIRMED' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate}} -->
-                            <p  class="category-desc">
-                                <!-- <i class="material-icons">date_range</i> -->
-                                {{'LAST_7_DAYS' | translate}}
-                            </p>
-                            <h4 class="title">{{issuesLast7days.length + feelingsLast7days.length}}<span *ngIf="issuesLast7days.length + feelingsLast7days.length > 999">+</span></h4>
-                        </div>
-                        <div class="card-footer">
-                            <div class="stats">
-                                {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}}
+                        <div class="card-content">
+                            <div class="row">
+
+                                <div class="card-header-custom flex-align-mid col-3" >
+                                    <!-- <i class="material-icons">build</i> -->
+                                    <img src="assets/images/events.png" alt="">
+                                </div>
+
+                                <div class="col-9">
+
+                                    <p class="category">{{'EVENTS' | translate}}</p>
+                                    <!-- {{'CONFIRMED' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate}} -->
+                                    <p  class="category-desc margin-bot-05">
+                                        <!-- <i class="material-icons">date_range</i> -->
+                                        {{'LAST_7_DAYS' | translate}}
+                                    </p>
+                                    <h4 class="sum">{{issuesLast7days.length + feelingsLast7days.length}}<span *ngIf="issuesLast7days.length + feelingsLast7days.length > 999">+</span></h4>
+                                    <div class="stats">
+                                        {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="col-xl-3 col-lg-6 col-xs-12">
                     <div class="card card-stats" >
-                        <div class="card-header-custom" >
-                            <!-- <i class="ion-md-stats"></i> -->
-                            <img src="assets/images/issuecal.png" alt="">
+                        <div class="card-content">
+                            <div class="row">
 
-                        </div>
-                        <div class="card-content" data-background-color="orange">
-                            <p class="category">{{'ISSUES' | translate}}</p>
-                            <p  class="category-desc">
-                                <!-- <i class="material-icons">date_range</i> -->
-                                <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
-                            </p>
+                                <div class="card-header-custom flex-align-mid col-3" >
+                                    <!-- <i class="ion-md-stats"></i> -->
+                                    <img src="assets/images/issuecal.png" alt="">
 
-                            <h4 class="title">{{allIssuesLastMonths.length}}<span *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
-                        </div>
-                        <div class="card-footer">
-                            <div class="stats">
-                                <!-- <i class="material-icons">date_range</i> {{'DASHBOARD.LAST24HOURS' | translate}} -->
-                                {{'MENTIONED_BY_CITIZENS' | translate}}
+                                </div>
+
+                                <div class="col-9">
+                                    <p class="category">{{'ISSUES' | translate}}</p>
+                                    <p  class="category-desc margin-bot-05">
+                                        <!-- <i class="material-icons">date_range</i> -->
+                                        <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                        <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                    </p>
+
+                                    <h4 class="sum">{{allIssuesLastMonths.length}}<span *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
+                                    <div class="stats">
+                                        <!-- <i class="material-icons">date_range</i> {{'DASHBOARD.LAST24HOURS' | translate}} -->
+                                        {{'MENTIONED_BY_CITIZENS' | translate}}
+                                    </div>
+
+                                </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="col-xl-3 col-lg-6 col-xs-12">
                     <div class="card card-stats" >
-                        <div class="card-header-custom" >
-                            <!-- <i class="ion-md-stats"></i> -->
-                            <div class="image-container">
-                                <img src="assets/images/solutions.png" alt="" style="width:45px;">
-                            </div>
-                        </div>
-                        <div class="card-content" data-background-color="red">
-                            <p class="category">{{'SOLUTIONS' | translate}}</p>
-                            <p  class="category-desc">
-                                <!-- <i class="material-icons">date_range</i> -->
-                                <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
-                            </p>
+                        <div class="card-content">
+                            <div class="row">
+                                <div class="card-header-custom flex-align-mid col-3" >
+                                    <!-- <i class="ion-md-stats"></i> -->
+                                    <div class="image-container">
+                                        <img src="assets/images/solutions.png" alt="" style="width:45px;">
+                                    </div>
+                                </div>
 
-                            <h4 class="title">{{solutionsLastMonths.length}}<span *ngIf="solutionsLastMonths.length > 999">+</span></h4>
-                        </div>
-                        <div class="card-footer">
-                            <div class="stats">
-                                {{'RESOLVED_ISSUES' | translate}}
+                                <div class="col-9">
+                                    <p class="category">{{'SOLUTIONS' | translate}}</p>
+                                    <p  class="category-desc margin-bot-05">
+                                        <!-- <i class="material-icons">date_range</i> -->
+                                        <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                        <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                    </p>
+
+                                    <h4 class="sum">{{solutionsLastMonths.length}}<span *ngIf="solutionsLastMonths.length > 999">+</span></h4>
+                                    <div class="stats">
+                                        {{'RESOLVED_ISSUES' | translate}}
+                                    </div>
+
+                                </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -104,13 +129,13 @@
 
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card" style="margin-top:0">
                         <div class="card-header" >
                             <p class="category">{{'EVENTS_MAP' | translate}}</p>
                             <p class="category category-desc">{{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}} ({{'LAST_7_DAYS' | translate}})</p>
                         </div>
 
-                        <div style="min-height:500px; height:80vh" id="issuesmap"
+                        <div style="min-height:500px; height:65vh" id="issuesmap"
                         leaflet
                         (leafletMapReady)="onMapReady($event)"
                         (leafletMarkerClusterReady)="markerClusterReady($event)"
@@ -121,58 +146,61 @@
                         [leafletCenter]="issueCenter"
                         [leafletLayers]="mapLayers"
                         [leafletLayersControl]="layersControl">
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class='col-lg-3'>
-            <div class="card">
-                <div class="card-header" >
-                    <p class="category">{{'LAST_ISSUES' | translate}}</p>
-                    <p class="category category-desc">{{'LAST_6_ISSUES' | translate}}</p>
-                </div>
-
-                <div class="bannerStyle card-body">
-                    <ngu-carousel
-                    [inputs]="carouselOne">
-                        <ngu-item NguCarouselItem class="bannerStyle card" *ngFor="let issue of issuesLast6; let issue_index = index">
-                            <div class="carousel-image-container">
-                                <div class="carousel-image">
-                                    <img *ngIf="!brokenImages[issue_index]" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
-                                    <i *ngIf="brokenImages[issue_index]" class="fa {{issue.icon}}" style="font-size:10.5em"></i>
-                                </div>
-
-                                <div>
-                                    <b>{{issue.issue | uppercase | translate}}</b>
-                                </div>
-                                <div class="category-desc">
-                                    {{issue.value_desc}}
-                                </div>
-                            </div>
-
-
-                            <div class="card-content">
-                                <p class="category"><small><span class="fa fa-cog icon-margin"></span>{{ 'STATUS' | translate }}</small><br /></p>
-                                <p class="category-desc category-desc-carousel">{{ issue.status | uppercase | translate }}</p>
-
-                                <p class="category"><small><span class="fa fa-clock-o icon-margin"></span>{{ 'REPORTED' | translate }}</small><br /></p>
-                                <p class="category-desc category-desc-carousel">{{ issue.created_ago }}</p>
-
-                                <p class="category"><a [routerLink]="['/issue',issue._id]"><small><span class="fa fa-info-circle icon-margin"></span>{{ 'DETAILS' | translate }}...</small></a></p>
-                            </div>
-                        </ngu-item>
-                        <button NguCarouselPrev class='leftRs'>&lt;</button>
-                        <button NguCarouselNext class='rightRs'>&gt;</button>
-                    </ngu-carousel>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-                <a data-width="100%"  class="twitter-timeline"  data-widget-id='841271929285820416'></a>
-            </div>
-        </div>
     </div>
+    <div class='col-lg-3 column-flexbox'>
+        <div class="card">
+            <div class="card-header" >
+                <p class="category">{{'LAST_ISSUES' | translate}}</p>
+                <p class="category category-desc">{{'LAST_6_ISSUES' | translate}}</p>
+            </div>
+
+            <div class="bannerStyle card-body">
+                <ngu-carousel
+                [inputs]="carouselOne"
+                >
+                <ngu-item NguCarouselItem class="bannerStyle card" *ngFor="let issue of issuesLast6; let issue_index = index">
+                    <div class="carousel-image-container">
+                        <div class="carousel-image" >
+                            <div [routerLink]="['/issue',issue._id]" style="cursor:pointer">
+                                <img  *ngIf="!brokenImages[issue_index]" [src]="issue.image_URL" (error)="imageLoadError(issue_index)"/>
+                                <i  *ngIf="brokenImages[issue_index]" class="fa {{issue.icon}}" style="font-size:9.5em"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <b>{{issue.issue | uppercase | translate}}</b>
+                        </div>
+                        <div class="category-desc">
+                            {{issue.value_desc}}
+                        </div>
+                    </div>
+
+
+                    <div class="card-content">
+                        <p class="category"><small><span class="fa fa-cog icon-margin"></span>{{ 'STATUS' | translate }}</small><br /></p>
+                        <p class="category-desc category-desc-carousel">{{ issue.status | uppercase | translate }}</p>
+
+                        <p class="category"><small><span class="fa fa-clock-o icon-margin"></span>{{ 'REPORTED' | translate }}</small><br /></p>
+                        <p class="category-desc category-desc-carousel">{{ issue.created_ago }}</p>
+
+                        <p class="category"><a [routerLink]="['/issue',issue._id]"><small><span class="fa fa-info-circle icon-margin"></span>{{ 'DETAILS' | translate }}...</small></a></p>
+                    </div>
+                </ngu-item>
+                <button NguCarouselPrev class='leftRs'>&lt;</button>
+                <button NguCarouselNext class='rightRs'>&gt;</button>
+            </ngu-carousel>
+
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:0; flex:auto; display:flex;">
+        <a data-width="100%"  class="twitter-timeline"  data-widget-id='841271929285820416'></a>
+    </div>
+</div>
+</div>
 </div>

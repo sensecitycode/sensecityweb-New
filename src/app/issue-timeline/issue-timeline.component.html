@@ -2,7 +2,7 @@
     <!-- <div class="row"> -->
     <h3 class="text-center">{{'ISSUE_PROGRESS' | translate}} <span *ngIf='issue?.bug_id' style="letter-spacing:1px">#{{issue?.bug_id}}</span></h3>
     <div class="timeline">
-        <div class="timeline-event" *ngFor='let progress of history; index as index; first as first'>
+        <div class="timeline-event" *ngFor='let progress of history; index as index; first as first; last as last'>
             <div class="card timeline-content">
                 <div class="card-header" *ngIf='!first'>
                     <i>
@@ -38,7 +38,7 @@
                                     <p class="category category-desc">{{issue.issue | uppercase | translate}} ({{issue.value_desc}})</p>
                                 </div>
                                 <div class="flex-align-mid card-body" style="min-height:200px; height:40vh">
-                                    <img *ngIf="!imageBroken" [src]="issueImage[0].thumb" (click)="openLightbox()" (error)="imageLoadError()" style ="height:100%; max-width:100%; cursor:pointer"/>
+                                    <img *ngIf="!imageBroken" [src]="issueImage[0].thumb" (click)="openLightbox()" (error)="imageLoadError()" style ="max-height:100%; max-width:100%; cursor:pointer"/>
                                     <i *ngIf="imageBroken" class="{{issueIcon}} responsive-icon"></i>
                                 </div>
                             </div>
@@ -49,6 +49,7 @@
                 <div class="card-body" style="margin: 0" *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
                     <p *ngIf='first'>{{ 'ADDRESS' | translate }}: <strong>{{issue.city_address}}</strong></p>
                     <div>{{ 'ASSIGNED_TO' | translate }}: <strong>{{progress.department}}</strong></div>
+                    <div style="margin-top:1rem" *ngIf='last && progress.state == "RESOLVED"'>{{ 'ASSIGNED_TO' | translate }}: <strong>{{issue.resolution}}</strong></div>
                 </div>
 
                 <div *ngIf="!last && progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div>

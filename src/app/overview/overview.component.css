@@ -1,10 +1,18 @@
+.container-fluid {
+    min-height: calc(100vh - 159px);
+}
+
+.card {
+    margin:20px 0
+}
+
 .card .card-header-custom {
-    box-shadow: 0 10px 30px -12px rgba(0,0,0,.42), 0 4px 25px 0 rgba(0,0,0,.12), 0 8px 10px -5px rgba(0,0,0,.2);
-    margin: -20px 15px 0;
-    border-radius: 3px;
-    padding: 10px 15px;
-    // background-color: #999;
+    /* box-shadow: 0 10px 30px -12px rgba(0,0,0,.42), 0 4px 25px 0 rgba(0,0,0,.12), 0 8px 10px -5px rgba(0,0,0,.2); */
+    /* margin: -20px 15px 0; */
+    /* border-radius: 3px; */
     background-color: #fff;
+    width:80px;
+    border-right: 1px solid #eee;
 
 }
 
@@ -13,30 +21,19 @@
     top: 2px;
     font-size: 14px;
 }
+
 .card .card-content {
     padding: 10px 20px;
+    min-height: 136px;
 }
 
-.card-row {
-    padding: 0px 10px;
+.card .sum {
+    font-weight: bold
 }
 
-.card-stats .title {
-    margin: 0;
-}
-.card-stats .card-header-custom {
-    float: left;
-    text-align: center;
-}
-.card-stats .card-header-custom i {
-    font-size: 36px;
-    line-height: 56px;
-    width: 56px;
-    height: 56px;
-}
 .card-stats .card-content {
-    text-align: right;
-    padding-top: 10px;
+    /* text-align: right; */
+    /* padding-top: 10px; */
 }
 
 .card-footer {
@@ -56,8 +53,8 @@
 /* .card-footer .author {
 color: #999;
 } */
-.card-footer .stats {
-    line-height: 22px;
+.card-content .stats {
+    line-height: 14px;
     color: #999;
     font-size: 12px;
 }
@@ -99,6 +96,11 @@ small {
     transition: all 0.3s;
 } */
 
+.column-flexbox {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
 
 /*  */
 /* CAROUSEL CSS */
@@ -111,11 +113,11 @@ small {
 .bannerStyle .carousel-image-container {
     /* background-color: #6b6b6b; */
     background-color: rgba(0, 0, 0, 0.8);
-    padding:1em 0;
+    padding:.5em 0;
     text-align: center;
     color: #fff;
-    min-height: 16em;
-    height: 16em;
+    min-height: 15em;
+    height: 15em;
     /* line-height: 300px; */
 }
 
@@ -134,7 +136,7 @@ small {
 }
 
 .category-desc-carousel {
-    margin-bottom:0.5rem;
+    margin-bottom:0.2rem;
 }
 
 
