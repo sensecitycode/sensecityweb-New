@@ -40,6 +40,7 @@ export class OverviewComponent implements OnInit {
     initial_language = this.translationService.getLanguage()
 
     last_months_params:any
+    last_days_params = {days:'10'}
     issuesLast7days = this.issuesService.issuesLast7days
     feelingsLast7days = this.issuesService.feelingsLast7days
     allIssuesLastMonths = this.issuesService.allIssuesLastMonths
@@ -117,7 +118,10 @@ export class OverviewComponent implements OnInit {
 
         let today = moment(new Date()).format("YYYY-MM-DD")
         let sevenDaysAgo = moment(today).subtract(7, 'days').format("YYYY-MM-DD")
-        let monthsAgo = moment(today).subtract(this.last_months_params, 'months').format("YYYY-MM-DD")
+
+        // let monthsAgo = moment(today).subtract(this.last_months_params, 'months').format("YYYY-MM-DD")
+        let monthsAgo = moment(today).subtract(10, 'days').format("YYYY-MM-DD")
+
 
         if (this.issuesService.issuesLast7days.length > 0 || this.issuesService.feelingsLast7days.length > 0 || this.issuesService.allIssuesLastMonths.length > 0) {
             this.displaysIssuesOnMap()
@@ -138,13 +142,13 @@ export class OverviewComponent implements OnInit {
             this.displaysIssuesOnMap()
         }))
 
-        setInterval(() => {
-            this.fetchLast7DaysIssues(today, sevenDaysAgo)
-            this.fetchLastMonthsIssues(today, monthsAgo)
-            this.fetchLastMonthsSolutions(today, monthsAgo)
-            this.fetchLast6Issues()
-            this.fetchLast7DaysFeelings(today, sevenDaysAgo)
-        }, 300000)
+        // setInterval(() => {
+        //     this.fetchLast7DaysIssues(today, sevenDaysAgo)
+        //     this.fetchLastMonthsIssues(today, monthsAgo)
+        //     this.fetchLastMonthsSolutions(today, monthsAgo)
+        //     this.fetchLast6Issues()
+        //     this.fetchLast7DaysFeelings(today, sevenDaysAgo)
+        // }, 300000)
     }
 
 

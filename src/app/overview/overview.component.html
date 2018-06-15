@@ -80,8 +80,9 @@
                                         <p class="category">{{'ISSUES' | translate}}</p>
                                         <p  class="category-desc margin-bot-05">
                                             <!-- <i class="material-icons">date_range</i> -->
-                                            <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                            <!-- <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span> -->
+                                            {{'LAST_DAYS' | translate:last_days_params}}
                                         </p>
 
                                         <h4 class="sum">{{allIssuesLastMonths.length}}<span *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
@@ -115,8 +116,9 @@
                                         <p class="category">{{'SOLUTIONS' | translate}}</p>
                                         <p  class="category-desc margin-bot-05">
                                             <!-- <i class="material-icons">date_range</i> -->
-                                            <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                            <!-- <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span> -->
+                                            {{'LAST_DAYS' | translate:last_days_params}}
                                         </p>
 
                                         <h4 class="sum">{{solutionsLastMonths.length}}<span *ngIf="solutionsLastMonths.length > 999">+</span><span class="out_of"> / {{allIssuesLastMonths.length}}</span><span class="out_of" *ngIf="allIssuesLastMonths.length > 999">+</span></h4>

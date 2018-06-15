@@ -65,6 +65,7 @@
     "LAST_7_DAYS":"Last 7 days",
     "LAST_MONTH":"Last month",
     "LAST_MONTHS":"Last {{months}} months",
+    "LAST_DAYS":"Last {{days}} days",
     "EVENTS_MAP":"Events Map",
     "FIXED_POINTS":"Bins / Lighting",
     "GARBAGE":"Cleaning",

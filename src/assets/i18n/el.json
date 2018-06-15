@@ -65,6 +65,7 @@
     "LAST_7_DAYS":"Τελ. 7 ημέρες",
     "LAST_MONTH":"Τελ. μήνας",
     "LAST_MONTHS":"Τελ. {{months}} μήνες",
+    "LAST_DAYS":"Τελ. {{days}} ημέρες",
     "EVENTS_MAP":"Χάρτης Συμβάντων",
     "FIXED_POINTS":"Κάδοι / Φωτισμός",
     "GARBAGE":"Καθαριότητας",
