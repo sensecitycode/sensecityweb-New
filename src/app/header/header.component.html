@@ -1,10 +1,10 @@
 <mat-toolbar class="header">
-    <div class='logo' routerLink='../'><span><i class="ion-ios-analytics-outline"></i>sense.city</span></div>
+    <div class='logo' routerLink='overview'><span><i class="ion-ios-analytics-outline"></i>sense.city</span></div>
 
-     <div fxShow="true" fxHide.lt-md="true">
+    <div fxShow="true" fxHide.lt-md="true">
         <ul>
             <!-- <li><a class='logo' routerLink='../'><i class="ion-ios-analytics-outline"></i>sense.city</a></li> -->
-            <li routerLinkActive="active"><a routerLinkActive="active" routerLink='report'>{{ 'REPORT_ISSUE' | translate}}</a></li>
+            <li routerLinkActive="active"><a routerLinkActive="active" routerLink='report' >{{ 'REPORT_ISSUE' | translate}}</a></li>
             <li routerLinkActive="active"><a routerLinkActive="active" routerLink='search'>{{ 'SEARCH' | translate}}</a></li>
             <li routerLinkActive="active"><a routerLinkActive="active" routerLink='issues'>{{ 'MORE_ISSUES' | translate}}</a></li>
 
@@ -32,7 +32,7 @@
 
 
     <div fxShow="true" fxHide.gt-sm="true">
-          <button mat-icon-button (click)="sidenav.toggle()"><i class="material-icons">menu</i></button>
+        <button mat-icon-button (click)="sidenav.toggle()"><i class="material-icons">menu</i></button>
     </div>
 
 
@@ -40,37 +40,38 @@
 
 <mat-sidenav-container fxFlexFill class="example-container">
 
-  <mat-sidenav #sidenav fxLayout="column" fxShow="true" fxHide.gt-sm="true">
+    <mat-sidenav #sidenav fxLayout="column" fxShow="true" fxHide.gt-sm="true">
 
-    <div fxLayout="column">
+        <div fxLayout="column">
 
-      <!-- <a (click)="sidenav.toggle()" mat-button>Close</a> -->
+            <!-- <a (click)="sidenav.toggle()" mat-button>Close</a> -->
+            <a mat-button routerLink='overview' (click)="sidenav.toggle()">{{ 'OVERVIEW' | translate}}</a>
 
-      <a mat-button routerLink='report'>{{ 'REPORT_ISSUE' | translate}}</a>
+            <a mat-button routerLink='report' (click)="sidenav.toggle()">{{ 'REPORT_ISSUE' | translate}}</a>
 
-      <a mat-button routerLink='search'>{{ 'SEARCH' | translate}}</a>
+            <a mat-button routerLink='search' (click)="sidenav.toggle()">{{ 'SEARCH' | translate}}</a>
 
-      <a mat-button routerLink='issues'>{{ 'MORE_ISSUES' | translate}}</a>
+            <a mat-button routerLink='issues' (click)="sidenav.toggle()">{{ 'MORE_ISSUES' | translate}}</a>
 
-      <a mat-button [matMenuTriggerFor]="menu">
-          <i class="material-icons">language</i>
-          <span>{{'LANGUAGE' | translate }}</span>
-      </a>
-      <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="langToEl()">
-              <img class="translate-flag" src="assets/flags/el.ico" />
-              <span [ngClass]="{'font-bold':currentLang == 'el'}">Ελληνικά</span>
-          </button>
-          <button mat-menu-item (click)="langToEn()">
-              <img class="translate-flag" src="assets/flags/en.ico" />
-              <span [ngClass]="{'font-bold':currentLang == 'en'}">English</span>
-          </button>
-      </mat-menu>
+            <a mat-button [matMenuTriggerFor]="menu">
+                <i class="material-icons">language</i>
+                <span>{{'LANGUAGE' | translate }}</span>
+            </a>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="langToEl()">
+                    <img class="translate-flag" src="assets/flags/el.ico" />
+                    <span [ngClass]="{'font-bold':currentLang == 'el'}">Ελληνικά</span>
+                </button>
+                <button mat-menu-item (click)="langToEn()">
+                    <img class="translate-flag" src="assets/flags/en.ico" />
+                    <span [ngClass]="{'font-bold':currentLang == 'en'}">English</span>
+                </button>
+            </mat-menu>
 
-    </div>
+        </div>
 
-  </mat-sidenav>
+    </mat-sidenav>
 
-  <mat-sidenav-content fxFlexFill><router-outlet></router-outlet></mat-sidenav-content>
+    <mat-sidenav-content fxFlexFill><router-outlet></router-outlet></mat-sidenav-content>
 
 </mat-sidenav-container>

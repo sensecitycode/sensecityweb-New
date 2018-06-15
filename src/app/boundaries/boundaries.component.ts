@@ -40,7 +40,6 @@ export class BoundariesComponent implements OnInit {
             zoom: 6,
             center: latLng(38.074208 , 22.824312)
         };
-        // console.log(this.mapInit);
         this.issueService.fetch_city_boundaries()
             .subscribe(
                 data => {
@@ -60,7 +59,6 @@ export class BoundariesComponent implements OnInit {
         }
 
     onMapReady(map: Map){
-        // console.log("ready");
         map.on ('layeradd', (ev:LeafletMouseEvent) => {
             map.fitBounds(this.geoJSON.getBounds(), {
                 padding: point(24, 24),

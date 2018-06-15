@@ -1,0 +1,7 @@
+<h2 mat-dialog-title>{{'WARNING' | translate}}!</h2>
+<mat-dialog-content>{{'DIALOGS.RESET_FORM_WARNING' | translate}}</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-raised-button color='accent' st (click)="closeDialog('cancel')" style="padding:2px 60px">{{'CANCEL' | translate}}</button>
+    <button mat-raised-button (click)="closeDialog('reset')">{{'RESET' | translate}}</button>
+</mat-dialog-actions>

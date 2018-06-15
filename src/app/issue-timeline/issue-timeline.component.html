@@ -1,4 +1,8 @@
 <div class="container-fluid main-content">
+    <!-- <div #gmap1 style="min-height:200px; height:40vh">
+
+    </div> -->
+
     <!-- <div class="row"> -->
     <h3 class="text-center">{{'ISSUE_PROGRESS' | translate}} <span *ngIf='issue?.bug_id' style="letter-spacing:1px">#{{issue?.bug_id}}</span></h3>
     <div class="timeline">
@@ -16,11 +20,23 @@
                     <div class="row" >
                         <div class="col-lg-7">
                             <div class="card" style="margin-top:0">
-                                <div class="card-header" >
-                                    <p class="category">{{'ISSUE_MAP' | translate}}</p>
-                                    <p class="category category-desc">{{'MAP_DISPLAY_ISSUE' | translate}}</p>
+                                <div class="card-header map-header">
+                                    <div>
+                                        <p class="category">{{'ISSUE_MAP' | translate}}</p>
+                                        <p class="category category-desc">{{'MAP_DISPLAY_ISSUE' | translate}}</p>
+                                    </div>
+                                    <mat-button-toggle-group style="background-color: #fff" [ngModel]="activeMap" (ngModelChange)="onMapSelection($event)">
+                                        <mat-button-toggle value="leaflet" matTooltip="{{ 'ISSUE_MAP'| translate}}"><i class="fa fa-map color_teal"></i></mat-button-toggle>
+                                        <mat-button-toggle value="google" matTooltip="Street View"><i class="fa fa-street-view color_teal"></i></mat-button-toggle>
+                                    </mat-button-toggle-group>
+                                    <!-- <button mat-raised-button (click)="setMap('leaflet')"><i class="material-icons">maps</i></button>
+                                    <button mat-raised-button (click)="setMap('google')"><i class="material-icons">360</i></button> -->
+
                                 </div>
-                                <div style="min-height:200px; height:40vh"
+                                <div #gmap1 [ngStyle]="{'min-height':'200px', 'height':'40vh', 'display': activeMap == 'google' ? 'block' : 'none'}">
+
+                                </div>
+                                <div [ngStyle]="{'min-height':'200px', 'height':'40vh', 'display': activeMap == 'leaflet' ? 'block' : 'none'}"
                                 leaflet
                                 (leafletMapReady)="onMapReady($event)"
                                 [leafletOptions]="mapInit"
@@ -157,7 +173,7 @@
 
                         <div class="row stepper_nav_buttons">
                             <div class="col-12 text-right">
-                                <button mat-raised-button color="primary" matStepperNext>{{'NEXT' | translate}}</button>
+                                <button mat-raised-button class="grey300-material-palette" matStepperNext>{{'NEXT' | translate}}</button>
                             </div>
                         </div>
                     </mat-step>
@@ -175,7 +191,16 @@
                                                 <span *ngIf ='!emailActivated && mobileActivated'>{{'CERTIFIED_MOBILE' | translate}}</span>
                                             </div>
 
+                                            <div *ngIf = '!checkActivatedGuards()'>
+                                                {{'CERTIFICATION_DESC' | translate}}
+                                            </div>
+
                                             <div *ngIf = 'emailChecked && !emailActivated'>
+                                                <div class="row" style="margin-top:1em">
+                                                    <div class="col-12">
+                                                        <strong>{{eponymousReportForm.controls.email.value}}</strong>
+                                                    </div>
+                                                </div>
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="row">
@@ -192,7 +217,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 flex-vertical-align">
-                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="requestEmailCode()" [disabled]="emailCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                        <button mat-raised-button color="primary" (click)="requestEmailCode()" [disabled]="emailCodeSent">{{'REQUEST_CODE' | translate}}</button>
                                                     </div>
                                                     <div class="col-md-4 flex-vertical-align">
                                                         <button mat-button color="basic" style="background-color:#ddd" (click)="activateEmail(emailCertCode.value)">{{'CERTIFICATION' | translate}}</button>
@@ -205,6 +230,11 @@
                                             </div>
 
                                             <div *ngIf = 'smsChecked && !mobileActivated'>
+                                                <div class="row" style="margin-top:1em">
+                                                    <div class="col-12">
+                                                        <strong>{{eponymousReportForm.controls.mobile.value}}</strong>
+                                                    </div>
+                                                </div>
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="row">
@@ -220,7 +250,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 flex-vertical-align">
-                                                        <button mat-button color="basic" style="background-color:#ddd" (click)="requestMobileCode()" [disabled]="mobileCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                        <button mat-raised-button color="primary" (click)="requestMobileCode()" [disabled]="mobileCodeSent">{{'REQUEST_CODE' | translate}}</button>
                                                     </div>
                                                     <div class="col-md-4 flex-vertical-align">
                                                         <button mat-button color="basic" style="background-color:#ddd" (click)="activateMobile(mobileCertCode.value)">{{'CERTIFICATION' | translate}}</button>
@@ -239,10 +269,10 @@
                         </div>
                         <div class="row stepper_nav_buttons">
                             <div class="col-6 text-left">
-                                <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                             </div>
                             <div class="col-6 text-right">
-                                <button mat-raised-button color="primary" matStepperNext [disabled]="!checkActivatedGuards()">{{'NEXT' | translate}}</button>
+                                <button mat-raised-button #allowLastStep class="grey300-material-palette" matStepperNext [disabled]="!checkActivatedGuards()">{{'NEXT' | translate}}</button>
                             </div>
                         </div>
                     </mat-step>
@@ -280,13 +310,13 @@
                                     </div>
                                 </div>
                                 <div class="col-12 subscibe-button text-center">
-                                    <button mat-raised-button color="basic" style="background-color:#eee" (click)="sendIssueReport()" [disabled]="issueReportSent">{{'SUBMIT_SUBSCRIPTION' | translate}}</button>
+                                    <button mat-raised-button color="primary" (click)="sendIssueReport()" [disabled]="issueReportSent || !checkActivatedGuards() ">{{'SUBMIT_SUBSCRIPTION' | translate}}</button>
                                 </div>
                             </div>
                         </div>
                         <div class="row stepper_nav_buttons">
                             <div class="col-6 text-left">
-                                <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                             </div>
                         </div>
                     </mat-step>

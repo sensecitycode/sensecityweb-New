@@ -22,7 +22,6 @@ export class PopupComponent implements OnInit {
     issue:any;
     imageBroken = false;
     ngOnInit() {
-        console.log(this.issueId)
         let issue_data:any
         this.issuesService.fetch_fullIssue(this.issueId)
         .subscribe (
@@ -32,7 +31,6 @@ export class PopupComponent implements OnInit {
 
                 this.loading = false
                 this.fullIssueFetched.next("loaded")
-                console.log(this.issue)
                 this.issue['imageUrl'] = this.issuesService.API + "/image_issue?bug_id=" + this.issue.bug_id + "&resolution=medium";
             }
         )

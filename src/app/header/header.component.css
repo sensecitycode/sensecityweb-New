@@ -1,5 +1,5 @@
 mat-toolbar {
-    background: rgba(0, 0, 0, 0.8);
+    background: #37474f;
     color: #fff;
     height:55px;
 }
@@ -41,7 +41,7 @@ mat-toolbar {
 
 .logo {
     padding: 0 45px !important;
-    background-color: #1caf9a;
+    background-color: #00897B;
     font-size: 20px !important;
     border-radius: 0px !important;
     cursor: pointer;

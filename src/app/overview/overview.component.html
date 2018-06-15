@@ -3,133 +3,141 @@
         <div class='col-lg-9'>
             <div class="row">
                 <div class="col-xl-3 col-lg-6 col-xs-12">
-                    <div class="card card-stats" >
-                        <div class="card-content">
-                            <div class="row">
+                    <a [routerLink]="['/search']" [queryParams]="{query: 1}">
+                        <div class="card card-stats" style="margin-bottom:0">
+                            <div class="card-content">
+                                <div class="row">
 
 
-                                <div class="card-header-custom flex-align-mid col-3" >
-                                    <!-- <i class="material-icons">person</i> -->
-                                    <img src="assets/images/issues.png" alt="">
-                                </div>
+                                    <div class="card-header-custom flex-align-mid col-3" >
+                                        <!-- <i class="material-icons">person</i> -->
+                                        <img src="assets/images/issues.png" alt="">
+                                    </div>
 
-                                <div class="col-9">
-                                    <p class="category">{{'ISSUES' | translate }}</p>
-                                    <p  class="category-desc margin-bot-05">
-                                        <!-- <i class="material-icons">date_range</i> -->
-                                        {{'LAST_7_DAYS' | translate}}
-                                    </p>
+                                    <div class="col-9">
+                                        <p class="category">{{'ISSUES' | translate }}</p>
+                                        <p  class="category-desc margin-bot-05">
+                                            <!-- <i class="material-icons">date_range</i> -->
+                                            {{'LAST_7_DAYS' | translate}}
+                                        </p>
 
-                                    <h4 class="sum">{{issuesLast7days.length}}<span *ngIf="issuesLast7days.length > 999">+</span></h4>
-                                    <div class="stats">
-                                        {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}}
+                                        <h4 class="sum">{{issuesLast7days.length}}<span *ngIf="issuesLast7days.length > 999">+</span></h4>
+                                        <div class="stats">
+                                            {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}}
+                                        </div>
+
                                     </div>
 
                                 </div>
-
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-xl-3 col-lg-6 col-xs-12">
-                    <div class="card card-stats" >
-                        <div class="card-content">
-                            <div class="row">
+                    <a [routerLink]="['/search']" [queryParams]="{query: 2}">
+                        <div class="card card-stats" style="margin-bottom:0">
+                            <div class="card-content">
+                                <div class="row">
 
-                                <div class="card-header-custom flex-align-mid col-3" >
-                                    <!-- <i class="material-icons">build</i> -->
-                                    <img src="assets/images/events.png" alt="">
-                                </div>
+                                    <div class="card-header-custom flex-align-mid col-3" >
+                                        <!-- <i class="material-icons">build</i> -->
+                                        <img src="assets/images/events.png" alt="">
+                                    </div>
 
-                                <div class="col-9">
+                                    <div class="col-9">
 
-                                    <p class="category">{{'EVENTS' | translate}}</p>
-                                    <!-- {{'CONFIRMED' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate}} -->
-                                    <p  class="category-desc margin-bot-05">
-                                        <!-- <i class="material-icons">date_range</i> -->
-                                        {{'LAST_7_DAYS' | translate}}
-                                    </p>
-                                    <h4 class="sum">{{issuesLast7days.length + feelingsLast7days.length}}<span *ngIf="issuesLast7days.length + feelingsLast7days.length > 999">+</span></h4>
-                                    <div class="stats">
-                                        {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}}
+                                        <p class="category">{{'EVENTS' | translate}}</p>
+                                        <!-- {{'CONFIRMED' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate}} -->
+                                        <p  class="category-desc margin-bot-05">
+                                            <!-- <i class="material-icons">date_range</i> -->
+                                            {{'LAST_7_DAYS' | translate}}
+                                        </p>
+                                        <h4 class="sum">{{issuesLast7days.length + feelingsLast7days.length}}<span *ngIf="issuesLast7days.length + feelingsLast7days.length > 999">+</span></h4>
+                                        <div class="stats">
+                                            {{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-xl-3 col-lg-6 col-xs-12">
-                    <div class="card card-stats" >
-                        <div class="card-content">
-                            <div class="row">
+                    <a [routerLink]="['/search']" [queryParams]="{query: 3}">
+                        <div class="card card-stats" style="margin-bottom:0">
+                            <div class="card-content">
+                                <div class="row">
 
-                                <div class="card-header-custom flex-align-mid col-3" >
-                                    <!-- <i class="ion-md-stats"></i> -->
-                                    <img src="assets/images/issuecal.png" alt="">
+                                    <div class="card-header-custom flex-align-mid col-3" >
+                                        <!-- <i class="ion-md-stats"></i> -->
+                                        <img src="assets/images/issuecal.png" alt="">
 
-                                </div>
+                                    </div>
 
-                                <div class="col-9">
-                                    <p class="category">{{'ISSUES' | translate}}</p>
-                                    <p  class="category-desc margin-bot-05">
-                                        <!-- <i class="material-icons">date_range</i> -->
-                                        <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                        <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
-                                    </p>
+                                    <div class="col-9">
+                                        <p class="category">{{'ISSUES' | translate}}</p>
+                                        <p  class="category-desc margin-bot-05">
+                                            <!-- <i class="material-icons">date_range</i> -->
+                                            <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                        </p>
 
-                                    <h4 class="sum">{{allIssuesLastMonths.length}}<span *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
-                                    <div class="stats">
-                                        <!-- <i class="material-icons">date_range</i> {{'DASHBOARD.LAST24HOURS' | translate}} -->
-                                        {{'MENTIONED_BY_CITIZENS' | translate}}
+                                        <h4 class="sum">{{allIssuesLastMonths.length}}<span *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
+                                        <div class="stats">
+                                            <!-- <i class="material-icons">date_range</i> {{'DASHBOARD.LAST24HOURS' | translate}} -->
+                                            {{'MENTIONED_BY_CITIZENS' | translate}}
+                                        </div>
+
                                     </div>
 
                                 </div>
 
                             </div>
-
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="col-xl-3 col-lg-6 col-xs-12">
-                    <div class="card card-stats" >
-                        <div class="card-content">
-                            <div class="row">
-                                <div class="card-header-custom flex-align-mid col-3" >
-                                    <!-- <i class="ion-md-stats"></i> -->
-                                    <div class="image-container">
-                                        <img src="assets/images/solutions.png" alt="" style="width:45px;">
+                    <a [routerLink]="['/search']" [queryParams]="{query: 4}">
+                        <div class="card card-stats" style="margin-bottom:0" >
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="card-header-custom flex-align-mid col-3" >
+                                        <!-- <i class="ion-md-stats"></i> -->
+                                        <div class="image-container">
+                                            <img src="assets/images/solutions.png" alt="" style="width:45px;">
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-9">
-                                    <p class="category">{{'SOLUTIONS' | translate}}</p>
-                                    <p  class="category-desc margin-bot-05">
-                                        <!-- <i class="material-icons">date_range</i> -->
-                                        <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
-                                        <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
-                                    </p>
+                                    <div class="col-9">
+                                        <p class="category">{{'SOLUTIONS' | translate}}</p>
+                                        <p  class="category-desc margin-bot-05">
+                                            <!-- <i class="material-icons">date_range</i> -->
+                                            <span *ngIf = "last_months_params.months < 2">{{'LAST_MONTH' | translate}}</span>
+                                            <span *ngIf = "last_months_params.months > 1">{{'LAST_MONTHS' | translate:last_months_params}}</span>
+                                        </p>
 
-                                    <h4 class="sum">{{solutionsLastMonths.length}}<span *ngIf="solutionsLastMonths.length > 999">+</span></h4>
-                                    <div class="stats">
-                                        {{'RESOLVED_ISSUES' | translate}}
+                                        <h4 class="sum">{{solutionsLastMonths.length}}<span *ngIf="solutionsLastMonths.length > 999">+</span><span class="out_of"> / {{allIssuesLastMonths.length}}</span><span class="out_of" *ngIf="allIssuesLastMonths.length > 999">+</span></h4>
+                                        <div class="stats">
+                                            {{'RESOLVED_ISSUES' | translate}}
+                                        </div>
+
                                     </div>
 
                                 </div>
 
                             </div>
-
                         </div>
-                    </div>
+                    </a>
                 </div>
 
             </div>
 
             <div class="row">
                 <div class="col-12">
-                    <div class="card" style="margin-top:0">
+                    <div class="card">
                         <div class="card-header" >
                             <p class="category">{{'EVENTS_MAP' | translate}}</p>
                             <p class="category category-desc">{{'CONFIRMED_PLURAL' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate | lowercase}} ({{'LAST_7_DAYS' | translate}})</p>
@@ -174,7 +182,7 @@
                         <div>
                             <b>{{issue.issue | uppercase | translate}}</b>
                         </div>
-                        <div class="category-desc">
+                        <div class="category-desc category-desc-carousel">
                             {{issue.value_desc}}
                         </div>
                     </div>
@@ -198,7 +206,7 @@
 
     </div>
 
-    <div class="card" style="margin-top:0; flex:auto; display:flex;">
+    <div class="card widget-container" style="margin-top:0;">
         <a data-width="100%"  class="twitter-timeline"  data-widget-id='841271929285820416'></a>
     </div>
 </div>

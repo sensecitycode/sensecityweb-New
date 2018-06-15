@@ -34,7 +34,8 @@
                 "../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
                 "../node_modules/ngx-toastr/toastr.css",
                 "../node_modules/angular2-lightbox/lightbox.css",
-                "styles.scss"
+                "styles.scss",
+                "assets/custom_theme/custom-theme.scss"
             ],
             "scripts": [
                 "../node_modules/hammerjs/hammer.min.js"

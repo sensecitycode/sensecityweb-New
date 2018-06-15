@@ -13,10 +13,12 @@
     "REFRESH":"Refresh",
     "SEARCH":"Search",
     "BROWSE":"Browse",
+    "OVERVIEW":"Overview",
     "STATISTICS":"Statistics",
     "LANGUAGE":"Ελ",
     "FILTER":"Filter",
     "OTHER":"other",
+    "WARNING":"Warning",
     "SUCCESS":"Success",
     "ERROR":"Error",
     "SORTING":"Sorting",
@@ -102,6 +104,7 @@
     "ID":"ID",
     "SELECTION":"Select",
     "ANONYMOUS_ΝΟ_CERTIFICATION": "Cerfication is not required for anonymous reports. Please proceed to the next step.",
+    "CERTIFICATION_DESC":"Your email/mobile is not registered in sense.city platform! You may request a 4-digit code to be sent to you, so as to get certified.",
     "CERTIFIED_MOBILE":"Your mobile has been certified. Please proceed to the next step.",
     "CERTIFIED_MAIL":"Your email has been certified. Please proceed to the next step.",
     "CERTIFIED_MAIL_MOBILE":"Your e-mail and mobile has been certified. Please proceed to the next step.",
@@ -119,7 +122,7 @@
     "ISSUE_REPORT_SUCCESS":"Your issue was successfully reported!",
     "ISSUE_SUB_ERROR":"Subscription email or mobile is not provided!",
     "SMS_NOT_SUPPORTED_ERROR":"Subscription via sms is not provided in your city!",
-    "ISSUE_SUB_SUCCESS":"Your request for issue subscription was successful!",
+    "ISSUE_SUB_SUCCESS":"You have successfully subscribed to the issue!",
     "ISSUE_PROGRESS":"Issue Progress",
     "ISSUE_NOT_FOUND_ERROR":"Issue was not found!",
     "ISSUE_IMAGE":"Issue Image",
@@ -174,6 +177,10 @@
         "RODENT_EXTERMINATION":"Rodent Extermination",
         "PEST_CONTROL":"Pest Control",
         "OTHER":"Other"
+    },
+
+    "DIALOGS": {
+        "RESET_FORM_WARNING":"If you change issue's category after proceeding to next steps, you will have to start from the beginning"
     },
 
     "CITIES":

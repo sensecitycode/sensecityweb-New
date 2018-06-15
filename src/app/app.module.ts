@@ -37,7 +37,9 @@ import {MatButtonModule,
         MatSelectModule,
         MatCheckboxModule,
         MatTooltipModule,
-        MatDatepickerModule} from '@angular/material';
+        MatDatepickerModule,
+        MatDialogModule,
+        MatButtonToggleModule} from '@angular/material';
 
 import { MatMomentDateModule } from '@angular/material-moment-adapter'
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
@@ -56,6 +58,7 @@ import { IssueTimelineComponent } from './issue-timeline/issue-timeline.componen
 import { AllIssuesComponent } from './all-issues/all-issues.component';
 import { SearchIssuesComponent } from './search-issues/search-issues.component';
 import { PopupComponent } from './shared/popup/popup.component';
+import { DialogComponent } from './shared/dialog/dialog.component';
 
 export function HttpLoaderFactory(httpclient:HttpClient) {
     return new TranslateHttpLoader(httpclient, './assets/i18n/', '.json');
@@ -74,10 +77,12 @@ registerLocaleData(localeEl);
         IssueTimelineComponent,
         AllIssuesComponent,
         SearchIssuesComponent,
-        PopupComponent
+        PopupComponent,
+        DialogComponent
     ],
     entryComponents: [
-        PopupComponent
+        PopupComponent,
+        DialogComponent
     ],
     imports: [
         BrowserModule,
@@ -97,6 +102,8 @@ registerLocaleData(localeEl);
         MatCheckboxModule,
         MatTooltipModule,
         MatDatepickerModule,
+        MatDialogModule,
+        MatButtonToggleModule,
         NgProgressModule.forRoot(),
         NgProgressHttpModule,
         CommonModule,
@@ -121,8 +128,7 @@ registerLocaleData(localeEl);
         {provide: MAT_DATE_LOCALE, useValue: 'el-EL'},
         {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
         {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
-        IssuesService,
-
+        IssuesService
     ],
     bootstrap: [AppComponent]
 })

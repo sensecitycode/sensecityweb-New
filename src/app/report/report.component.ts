@@ -1,5 +1,8 @@
-import { Component, OnInit, ViewEncapsulation, NgZone, DoCheck, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, NgZone, ViewChild, ChangeDetectorRef  } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+import {MatDialog} from '@angular/material/dialog';
+import { DialogComponent } from '../shared/dialog/dialog.component';
 
 import { TranslationService } from '../shared/translation.service';
 import { IssuesService } from '../shared/issues.service';
@@ -19,7 +22,12 @@ import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 })
 export class ReportComponent implements OnInit {
 
-    constructor(private translationService: TranslationService, private issuesService: IssuesService, private toastr: ToastrService, private zone: NgZone) { }
+    constructor(private translationService: TranslationService,
+                private issuesService: IssuesService,
+                private toastr: ToastrService,
+                private zone: NgZone,
+                private cdr: ChangeDetectorRef,
+                private dialog: MatDialog) { }
 
 
     issueReportForm: FormGroup;
@@ -90,7 +98,6 @@ export class ReportComponent implements OnInit {
 
     mapEditAllowed = true
     stepperSelectionChange(event) {
-        console.log(event)
         if (event.selectedIndex == 0) {
             this.mapEditAllowed = true
         }
@@ -103,9 +110,19 @@ export class ReportComponent implements OnInit {
             }
         }
 
+        if (this.issueCityPolicy.hasOwnProperty('add_issue')) {
+            if (this.issueCityPolicy.add_issue == 0){
+
+                this.issueCityPolicy = {}
+                this.resetStepper()
+
+            }
+        }
+
         if (event.previouslySelectedIndex == 1 && event.selectedIndex > 1 && this.eponymousCheckbox) {
             this.isUserActivated()
         }
+
 
         if (event.previouslySelectedIndex == 1 && !this.eponymousCheckbox) {
             this.recommendedIssues = []
@@ -113,7 +130,6 @@ export class ReportComponent implements OnInit {
         }
 
         if (event.selectedIndex == 2 && this.recommendedIssues.length == 0) {
-            console.log('optional')
             if (event.previouslySelectedIndex < 2) {
                 this.selectedStepIndex = 3
             }
@@ -135,7 +151,6 @@ export class ReportComponent implements OnInit {
     imageUrl = '';
     imageName = '';
     onSelectFile(event) {
-        console.log(event)
         this.imageName = '';
         this.imageUrl = '';
         if (event.target.files && event.target.files[0]) {
@@ -146,11 +161,9 @@ export class ReportComponent implements OnInit {
                     let reader = new FileReader();
                     this.imageName = event.target.files[0].name
 
-                    console.log(event)
 
                     reader.readAsDataURL(event.target.files[0]); // read file as data url
                     reader.onload = (event) => {
-                        console.log(event)
                         this.imageUrl = event.target['result'];
                     }
                 } else {
@@ -165,11 +178,22 @@ export class ReportComponent implements OnInit {
 
     issueSelectedIndex:number = 0;
     changeIssueType(index) {
-        // console.log(index)
-        this.issueSelectedIndex = index
+        if (this.issueCityPolicy.hasOwnProperty('add_issue')) {
+            let dialogRef = this.dialog.open(DialogComponent)
 
-        this.issueReportForm.patchValue({issue_subtype:this.issues[index].subtypes[0]})
-        this.changeIssueSubType(this.issues[index].subtypes[0])
+            dialogRef.afterClosed().subscribe(result => {
+                if (result == "reset") {
+                    this.resetStepper()
+                } else {
+                    this.issueReportForm.patchValue({issue_type:this.issues[this.issueSelectedIndex].type})
+                }
+            })
+        } else {
+            this.issueSelectedIndex = index
+            this.issueReportForm.patchValue({issue_subtype:this.issues[index].subtypes[0]})
+            this.changeIssueSubType(this.issues[index].subtypes[0])
+
+        }
     }
 
     subtypeOtherSelected = false;
@@ -181,8 +205,6 @@ export class ReportComponent implements OnInit {
             this.issueReportForm.get('issue_misc_desc').clearValidators()
             this.issueReportForm.get('issue_misc_desc').updateValueAndValidity()
         }
-        console.log(this.subtypeOtherSelected)
-
     }
 
     searchAddress(address) {
@@ -193,7 +215,6 @@ export class ReportComponent implements OnInit {
                     data =>
                     {
                         if (data.results.length > 0) {
-                            console.log(this.issueCenter)
                             this.displayIssuesOnMap(data.results[0].geometry.location.lat, data.results[0].geometry.location.lng);
                             this.issueReportForm.patchValue({address:data.results[0].formatted_address})
                         } else {
@@ -229,9 +250,7 @@ export class ReportComponent implements OnInit {
             (error) => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () =>
             {
-                console.log(this.cityPolicy)
                 if (this.cityPolicy['municipality'] && this.cityPolicy['municipality'] == this.issuesService.city) {
-                    // console.log(this.cityPolicy['city'])
                     this.step2_disabled = false;
 
                     //
@@ -251,10 +270,8 @@ export class ReportComponent implements OnInit {
     }
 
     onMapReady(map: L.Map){
-        console.log("map ready")
         // map.doubleClickZoom.disable()
         map.on('click', (ev:L.LeafletMouseEvent) => {
-            // console.log(ev.latlng)
             if (this.mapEditAllowed == true) {
             //
             //NgZone because map click is outside of AngularScope
@@ -286,7 +303,7 @@ export class ReportComponent implements OnInit {
     //  STEP 2 - EPONYMOUS REPORT
     //
 
-    issueCityPolicy:any;
+    issueCityPolicy:any = {};
     eponymousCheckbox = true;
     smsChecked = false;
     emailChecked = false;
@@ -296,16 +313,13 @@ export class ReportComponent implements OnInit {
             data => this.issueCityPolicy = data[0],
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
-
             }
 
         )
     }
 
     checkEponymoys(changeEvent) {
-        console.log(changeEvent.checked)
         if (changeEvent.checked == false) {
-            // console.log(this.eponymousReportForm)
             this.eponymousReportForm.get('fullname').clearValidators()
             this.eponymousReportForm.get('fullname').updateValueAndValidity()
             this.eponymousReportForm.get('email').clearValidators()
@@ -326,7 +340,7 @@ export class ReportComponent implements OnInit {
     fetchRecommendedIssues() {
         this.issuesService.fetch_recommended_issues(this.issueReportForm.get('latitude').value, this.issueReportForm.get('longitude').value, this.issueReportForm.get('issue_type').value)
         .subscribe(
-            data => {data.length > 0 ? this.recommendedIssues = data[0].bugs: this.recommendedIssues = []; console.log(this.recommendedIssues) },
+            data => {data.length > 0 ? this.recommendedIssues = data[0].bugs: this.recommendedIssues = []; },
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
                 this.recommendedIssues.forEach( (element) => {
@@ -368,14 +382,11 @@ export class ReportComponent implements OnInit {
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
                 if (this.emailChecked) {
-                    console.log(this.isActivated.activate_email);
                     (this.isActivated.activate_email == "1") ? this.emailActivated = true : this.emailActivated = false
                 }
                 if (this.smsChecked) {
-                    console.log(this.isActivated.activate_sms);
                     (this.isActivated.activate_sms == "1") ? this.mobileActivated = true : this.mobileActivated = false
                 }
-                console.log(this.checkActivatedGuards())
             }
         )
     }
@@ -401,7 +412,6 @@ export class ReportComponent implements OnInit {
         this.issuesService.request_email_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('email').value)
         .subscribe(
             data => {
-                console.log(data)
                 if (data.length > 0) {
                     if (data[0].Status == "send") this.emailCodeSent = true
                 }
@@ -415,7 +425,6 @@ export class ReportComponent implements OnInit {
         .subscribe(
             data => {
                 this.emailCodeChecked = true
-                console.log(data)
                 if (data == null) {
                     this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
@@ -432,7 +441,6 @@ export class ReportComponent implements OnInit {
         this.issuesService.request_mobile_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('mobile').value, this.issueReportForm.get('latitude').value, this.issueReportForm.get('longitude').value)
         .subscribe(
             data => {
-                console.log(data)
                 if (data.status) {
                     if (data.status == "send sms") this.mobileCodeSent = true
                 }
@@ -447,7 +455,6 @@ export class ReportComponent implements OnInit {
         .subscribe(
             data => {
                 this.mobileCodeChecked = true
-                console.log(data)
                 if (data.nModified && data.nModified == 0) {
                     this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
@@ -480,10 +487,7 @@ export class ReportComponent implements OnInit {
     issueReportSent = false
     sendIssueReport() {
         this.issueReportSent = true
-        console.log(this.recommendedIssues)
-        console.log(this.selectedRecomIndex)
         if (this.selectedRecomIndex == undefined ) {
-            console.log('submit')
             let value_desc = "";
             this.issueReportForm.get('issue_subtype').value != "other" ? value_desc = this.translationService.get_instant("ISSUE_SUBTYPES." + this.issueReportForm.get('issue_subtype').value.toUpperCase()) : value_desc = this.issueReportForm.get('issue_misc_desc').value
 
@@ -513,7 +517,6 @@ export class ReportComponent implements OnInit {
                 error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
                 () => {
                     if (this.eponymousCheckbox) {
-                        console.log("eponumous")
                         let user_obj = {
                             "uuid":"web-site",
                             "name":this.eponymousReportForm.get('fullname').value,
@@ -536,8 +539,6 @@ export class ReportComponent implements OnInit {
                 }
             )
         } else {
-            console.log('subscribe')
-            console.log(this.recommendedIssues[this.selectedRecomIndex])
             let sub_obj = {
                 "name":this.eponymousReportForm.get('fullname').value,
                 "email":this.eponymousReportForm.get('email').value,
@@ -554,7 +555,6 @@ export class ReportComponent implements OnInit {
             this.issuesService.issue_subscribe(sub_obj)
             .subscribe(
                 data => {
-                    console.log(data);
                     if (data.message == "OK") {
                         this.toastr.success(this.translationService.get_instant('ISSUE_SUB_SUCCESS'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
                     } else {
@@ -563,7 +563,6 @@ export class ReportComponent implements OnInit {
                     this.resetStepper()
                 },
                 error => {
-                    console.log(error)
                     if (error.error == "Bad Request") {
                         this.toastr.error(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
                     } else {
@@ -577,6 +576,7 @@ export class ReportComponent implements OnInit {
     }
 
     resetStepper() {
+
         this.selectedStepIndex = 0
         this.stepper.reset()
 
@@ -584,13 +584,14 @@ export class ReportComponent implements OnInit {
         // this.issueReportForm.reset();
         this.issueSelectedIndex = 0
         this.subtypeOtherSelected = false
-        this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin', address:'', comment:'', issue_misc_desc:''})
         this.imageName = '';
         this.imageUrl = '';
+        this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin', comment:''})
         this.issueZoom = this.issuesService.cityCenter.zoom,
         this.issueCenter = L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         this.mapLayers = []
 
+        this.issueCityPolicy = {}
         this.eponymousReportForm.setValue({fullname:'', email:'', mobile:''})
 
         this.recommendedIssues = []
@@ -608,9 +609,5 @@ export class ReportComponent implements OnInit {
     //  --- END OF STEP 5 - SUBMIT ISSUE ---
     //
 
-    // ngDoCheck() {
-    //     console.log('change')
-    //     // this.changeDetection.markForCheck()
-    // }
 
 }

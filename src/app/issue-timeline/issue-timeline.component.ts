@@ -9,6 +9,7 @@ import { IssuesService } from '../shared/issues.service';
 import { ToastrService } from 'ngx-toastr';
 import { Lightbox } from 'angular2-lightbox';
 
+import { } from '@types/googlemaps';
 
 import * as L from 'leaflet';
 import * as UntypedL from 'leaflet/dist/leaflet-src'
@@ -31,18 +32,23 @@ export class IssueTimelineComponent implements OnInit {
     initial_language = this.translationService.getLanguage();
     issue:any = {}
 
+    activeMap = 'leaflet';
+    @ViewChild('gmap1') gmapElement: any;
+
     mapInit:object;
     issueZoom:number ;
     issueCenter: L.LatLng
     mapLayers = [];
 
+
     eponymousReportForm: FormGroup;
+
     @ViewChild('stepper') stepper;
+    @ViewChild('allowLastStep') allowLastStep;
     selectedStepIndex = 0
 
 
     ngOnInit() {
-        console.log(this.activatedRoute.snapshot.url[this.activatedRoute.snapshot.url.length - 1].path)
         this.fetchFullIssue()
 
         let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
@@ -63,7 +69,6 @@ export class IssueTimelineComponent implements OnInit {
         this.issuesService.fetch_fullIssue(this.activatedRoute.snapshot.url[this.activatedRoute.snapshot.url.length - 1].path)
         .subscribe(
             data => {
-                console.log(data)
                 if (data.length > 0) {
                     this.issue = data[0]
                 } else {
@@ -72,12 +77,12 @@ export class IssueTimelineComponent implements OnInit {
             },
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
-                console.log(this.issue)
                 this.displayIssueOnMap(this.issue)
                 this.fetchHistory()
                 this.fetchIssueImage()
                 this.fetchNearbyFixedPoints()
                 this.fetchCityPolicy(this.issue.loc.coordinates[1], this.issue.loc.coordinates[0])
+
             }
         )
     }
@@ -96,6 +101,8 @@ export class IssueTimelineComponent implements OnInit {
 
         this.issueZoom = 17;
         this.issueCenter = L.latLng([issue.loc.coordinates[1],issue.loc.coordinates[0]])
+
+        // this.initGoogleStreetView()
     }
 
     history = []
@@ -131,7 +138,6 @@ export class IssueTimelineComponent implements OnInit {
             var name:string;
             var user_status:string;
             for (let l = 0; l < comment.tags.length; l++) {
-                // console.log(comment.tags[l])
 
                 if (comment.tags[l].split(":")[0].toUpperCase() == "STATUS") {status_index = l}
 
@@ -148,7 +154,6 @@ export class IssueTimelineComponent implements OnInit {
 
                 if (comment.tags[l].split(":")[0].toUpperCase() == "ACTION" && comment.tags[l].split(":")[1].toUpperCase() == "NEW-USER") {
                     user_status = "NEW-USER";
-                    // console.log("NEW-USER")
                     for (let j = 0; j < comment.tags.length; j++){
                         if (comment.tags[j].split(":")[0].toUpperCase() == "NAME") {
                             var cc_name = comment.tags[j].split(":")[1];
@@ -163,7 +168,6 @@ export class IssueTimelineComponent implements OnInit {
                 }
 
                 if (comment.tags[l].split(":")[0].toUpperCase() == "ACTION" && comment.tags[l].split(":")[1].toUpperCase() == "USER-EXISTED") {
-                    // console.log("USER-EXISTED")
                     user_status = "USER-EXISTED";
                 }
 
@@ -206,11 +210,7 @@ export class IssueTimelineComponent implements OnInit {
 
             this.history.push(history_object)
 
-            // console.log(this.history[comment_index])
-            // console.log(this.cc_list)
         })
-        console.log('//progress//')
-        console.log(this.history)
     }
 
     fetchNearbyFixedPoints() {
@@ -222,9 +222,6 @@ export class IssueTimelineComponent implements OnInit {
             this.issuesService.fetch_nearby_fixed_points(this.issue.loc.coordinates[0], this.issue.loc.coordinates[1], type)
             .subscribe(
                 data => {
-                    console.log(data)
-                    // let StaticGarbageMarkers:L.Layer[] = []
-                    // let StaticLightingMarkers:L.Layer[] = []
                     for (let FixPnt of data) {
                         if (FixPnt.type == 'garbage') {
                             let AwesomeMarker;
@@ -262,9 +259,8 @@ export class IssueTimelineComponent implements OnInit {
                             this.mapLayers.push(LightMarker);
                         }
                     }
-                    // console.log(this.mapLayers)
                 },
-                error => console.log(error)
+                error => {}
             )
         }
     }
@@ -288,6 +284,48 @@ export class IssueTimelineComponent implements OnInit {
         this.issueImage[0].caption = `${this.issue['bug_id']} (${this.issue['value_desc']})`
     }
 
+    panorama: any
+    initGoogleStreetView() {
+        let issueType = this.issue.issue;
+
+        var sv = new google.maps.StreetViewService();
+        this.panorama = new google.maps.StreetViewPanorama(this.gmapElement.nativeElement);
+
+        sv.getPanoramaByLocation({lat: this.issue.loc.coordinates[1], lng: this.issue.loc.coordinates[0]}, 200, checkNearestStreetView);
+
+        let panorama = this.panorama
+        let issueLoc = [this.issue.loc.coordinates[1], this.issue.loc.coordinates[0]]
+        function checkNearestStreetView(panoData, status) {
+            if (panoData != null) {
+                var issueMarker = new google.maps.Marker({
+                    position: panoData.location.latLng,
+                    map: panorama,
+                    icon: `../assets/issue_icons/red2x.png`,
+                    visible: true
+                });
+                if (panorama != undefined)
+                    panorama.setPosition(panoData.location.latLng);
+                google.maps.event.trigger(panorama, "resize");
+            }
+        }
+    }
+
+    onMapSelection(map) {
+        this.activeMap = map
+
+        if (map == "google" && this.panorama == undefined) {
+            this.initGoogleStreetView()
+        }
+
+        if (map == "leaflet") {
+            setTimeout(() => {
+                this.leafletMap.invalidateSize()
+            }, 50)
+
+        }
+
+    }
+
     openLightbox() {
         this.lightbox.open(this.issueImage)
     }
@@ -297,17 +335,16 @@ export class IssueTimelineComponent implements OnInit {
         this.issueIcon = "fa "+this.issuesService.get_issue_icon(this.issue['issue'])
     }
 
+    leafletMap: L.Map
     onMapReady(map: L.Map){
-        console.log("map ready")
         map.scrollWheelZoom.disable()
+        this.leafletMap = map
     }
 
     //stepper logic
     //
 
     stepperSelectionChange(event) {
-        console.log(event)
-
 
         if (event.previouslySelectedIndex == 0 && event.selectedIndex > 0) {
             this.isUserActivated()
@@ -329,7 +366,6 @@ export class IssueTimelineComponent implements OnInit {
             (error) => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () =>
             {
-                console.log(this.cityPolicy)
                 this.smsChecked = (this.cityPolicy['mandatory_sms'].toLowerCase() === "true")
                 this.emailChecked = (this.cityPolicy['mandatory_email'].toLowerCase() === "true")
             }
@@ -358,14 +394,11 @@ export class IssueTimelineComponent implements OnInit {
             error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () => {
                 if (this.emailChecked) {
-                    console.log(this.isActivated.activate_email);
                     (this.isActivated.activate_email == "1") ? this.emailActivated = true : this.emailActivated = false
                 }
                 if (this.smsChecked) {
-                    console.log(this.isActivated.activate_sms);
                     (this.isActivated.activate_sms == "1") ? this.mobileActivated = true : this.mobileActivated = false
                 }
-                console.log(this.checkActivatedGuards())
             }
         )
     }
@@ -391,7 +424,6 @@ export class IssueTimelineComponent implements OnInit {
         this.issuesService.request_email_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('email').value)
         .subscribe(
             data => {
-                console.log(data)
                 if (data.length > 0) {
                     if (data[0].Status == "send") this.emailCodeSent = true
                 }
@@ -405,7 +437,6 @@ export class IssueTimelineComponent implements OnInit {
         .subscribe(
             data => {
                 this.emailCodeChecked = true
-                console.log(data)
                 if (data == null) {
                     this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
@@ -422,7 +453,6 @@ export class IssueTimelineComponent implements OnInit {
         this.issuesService.request_mobile_code(this.eponymousReportForm.get('fullname').value, this.eponymousReportForm.get('mobile').value, this.issue.loc.coordinates[1], this.issue.loc.coordinates[0])
         .subscribe(
             data => {
-                console.log(data)
                 if (data.status) {
                     if (data.status == "send sms") this.mobileCodeSent = true
                 }
@@ -437,7 +467,6 @@ export class IssueTimelineComponent implements OnInit {
         .subscribe(
             data => {
                 this.mobileCodeChecked = true
-                console.log(data)
                 if (data.nModified && data.nModified == 0) {
                     this.toastr.error(this.translationService.get_instant('VERIFICATION_CODE_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
@@ -483,7 +512,6 @@ export class IssueTimelineComponent implements OnInit {
     sendIssueReport() {
         this.issueReportSent = true
 
-        console.log('subscribe')
         let sub_obj = {
             "name":this.eponymousReportForm.get('fullname').value,
             "email":this.eponymousReportForm.get('email').value,
@@ -498,8 +526,7 @@ export class IssueTimelineComponent implements OnInit {
         this.issuesService.issue_subscribe_register(sub_obj, this.uploadFilesFormData)
         .subscribe(
             data => {
-                console.log(data)
-                if (data.message =='success') {
+                if (data =='success') {
                     this.toastr.success(this.translationService.get_instant('ISSUE_SUB_SUCCESS'), this.translationService.get_instant('SUCCESS'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
                 this.resetStepper()
@@ -514,36 +541,6 @@ export class IssueTimelineComponent implements OnInit {
                 this.resetStepper()
             }
         )
-
-        // if (this.issueReportForm.get('comment').value != '') {
-        //     sub_obj['comment'] = this.issueReportForm.get('comment').value.replace(/\s+/g, ' ').trim()
-        // }
-
-
-        // let issueSubResponse = {}
-        // this.issuesService.issue_subscribe(sub_obj)
-        // .subscribe(
-        //     data => {
-        //         console.log(data);
-        //         if (data.message == "OK") {
-        //             this.toastr.success(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('SUCCESS'), {timeOut:8000, progressBar:true, enableHtml:true})
-        //         } else {
-        //             this.toastr.error(this.translationService.get_instant('SMS_NOT_SUPPORTED_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        //         }
-        //         this.resetStepper()
-        //     },
-        //     error => {
-        //         console.log(error)
-        //         if (error.error == "Bad Request") {
-        //             this.toastr.error(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        //         } else {
-        //             this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
-        //         }
-        //     }
-        // )
-
-
-
     }
 
     resetStepper() {

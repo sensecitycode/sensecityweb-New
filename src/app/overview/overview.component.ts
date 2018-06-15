@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone, OnDestroy } from '@angular/core';
 import { PopupComponent } from '../shared/popup/popup.component'
 
 import { ToastrService } from 'ngx-toastr';
@@ -7,6 +7,7 @@ import { IssuesService } from '../shared/issues.service';
 import { NgProgress } from '@ngx-progressbar/core';
 import { NguCarousel } from '@ngu/carousel';
 
+import { Subscription } from 'rxjs/Subscription'
 
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -39,11 +40,11 @@ export class OverviewComponent implements OnInit {
     initial_language = this.translationService.getLanguage()
 
     last_months_params:any
-    issuesLast7days = []
-    feelingsLast7days = []
-    allIssuesLastMonths = []
-    openIssuesLastMonths = []
-    solutionsLastMonths = []
+    issuesLast7days = this.issuesService.issuesLast7days
+    feelingsLast7days = this.issuesService.feelingsLast7days
+    allIssuesLastMonths = this.issuesService.allIssuesLastMonths
+    openIssuesLastMonths = this.issuesService.openIssuesLastMonths
+    solutionsLastMonths = this.issuesService.solutionsLastMonths
     issuesLast6 = []
     carouselOne: NguCarousel
     brokenImages = [false, false, false, false, false, false];
@@ -70,6 +71,9 @@ export class OverviewComponent implements OnInit {
     feelingsMarkers = [];
     issueZoom:number ;
     issueCenter: L.LatLng
+
+    subscriptions = new Subscription()
+
     ngOnInit() {
         this.last_months_params = {months:'2'}
         let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
@@ -112,119 +116,53 @@ export class OverviewComponent implements OnInit {
         }
 
         let today = moment(new Date()).format("YYYY-MM-DD")
-        // console.log(today)
         let sevenDaysAgo = moment(today).subtract(7, 'days').format("YYYY-MM-DD")
-        let monthsAgo = moment(today).subtract(2, 'months').format("YYYY-MM-DD")
-        // console.log(sevenDaysAgo)
-        // console.log(monthsAgo)
+        let monthsAgo = moment(today).subtract(this.last_months_params, 'months').format("YYYY-MM-DD")
 
-        // console.log('fetch last 7 days')
+        if (this.issuesService.issuesLast7days.length > 0 || this.issuesService.feelingsLast7days.length > 0 || this.issuesService.allIssuesLastMonths.length > 0) {
+            this.displaysIssuesOnMap()
+        }
+
+        this.fetchLast7DaysIssues(today, sevenDaysAgo)
+        this.fetchLastMonthsIssues(today, monthsAgo)
+        this.fetchLastMonthsSolutions(today, monthsAgo)
+        this.fetchLast6Issues()
+        this.fetchLast7DaysFeelings(today, sevenDaysAgo)
+
+
+        this.subscriptions.add(this.translationService.languageChanged
+        .subscribe( (new_lang: string) => {
+            this.issuesLast6.forEach( (element) => {
+                element.created_ago = moment(new Date(element.create_at)).locale(new_lang).fromNow()
+            })
+            this.displaysIssuesOnMap()
+        }))
+
+        setInterval(() => {
+            this.fetchLast7DaysIssues(today, sevenDaysAgo)
+            this.fetchLastMonthsIssues(today, monthsAgo)
+            this.fetchLastMonthsSolutions(today, monthsAgo)
+            this.fetchLast6Issues()
+            this.fetchLast7DaysFeelings(today, sevenDaysAgo)
+        }, 300000)
+    }
+
+
+    fetchLast7DaysIssues(today, sevenDaysAgo) {
         this.issuesService.fetch_issues(today, sevenDaysAgo, 'CONFIRMED|IN_PROGRESS')
             .subscribe(
-                data => { this.issuesLast7days = data },
+                data => {
+                    this.issuesLast7days = data
+                    this.issuesService.issuesLast7days = data
+                },
                 error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
                 () => {
-                    let garbage_markers = []
-                    let lighting_markers = []
-                    let plumbing_markers = []
-                    let road_markers = []
-                    let protection_markers = []
-                    let green_markers = []
-                    let environment_markers = []
-
-                    this.issuesLast7days.forEach((element) =>{
-                        // console.log(element)
-                        let icon = this.issuesService.get_issue_icon(element.issue)
-                        let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
-                            icon: icon,
-                            markerColor: 'red',
-                            prefix: 'fa',
-                        })
-                        let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup(null);;
-                        switch (element.issue) {
-                            case 'garbage':
-                                // console.log('garbage');
-                                garbage_markers.push(issueMarker)
-                                break;
-                            case 'lighting':
-                                // console.log('lighting');
-                                lighting_markers.push(issueMarker)
-                                break;
-                            case 'plumbing':
-                                // console.log('plumbing');
-                                plumbing_markers.push(issueMarker)
-                                break;
-                            case 'road-constructor':
-                                // console.log('road-constructor');
-                                road_markers.push(issueMarker)
-                                break;
-                            case 'protection-policy':
-                                // console.log('protection-policy');
-                                protection_markers.push(issueMarker)
-                                break;
-                            case 'green':
-                                // console.log('green');
-                                green_markers.push(issueMarker)
-                                break;
-                            case 'environment':
-                                // console.log('environment');
-                                environment_markers.push(issueMarker)
-                        }
-                        issueMarker.on('click', ev => {
-                            this.createMarkerPopup (issueMarker, ev)
-                        })
-                    })
-
-                    this.layersControl['overlays'] = {
-                        [this.translationService.get_instant('GARBAGE')]: L.layerGroup(garbage_markers),
-                        [this.translationService.get_instant('LIGHTING')]: L.layerGroup(lighting_markers),
-                        [this.translationService.get_instant('ROAD-CONSTRUCTOR')]: L.layerGroup(road_markers),
-                        [this.translationService.get_instant('PROTECTION-POLICY')]: L.layerGroup(protection_markers),
-                        [this.translationService.get_instant('GREEN')]: L.layerGroup(green_markers),
-                        [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers),
-                        [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
-                    }
-                    // this.mapLayers = [this.layersControl['overlays'][this.translationService.get_instant('GARBAGE')]]
-                    for (let layer in this.layersControl['overlays']) {
-                        this.mapLayers.push(this.layersControl['overlays'][layer])
-                    }
-
-                    this.layersControl['overlays'][this.translationService.get_instant('CITIZEN_MOOD')] = L.layerGroup(this.feelingsMarkers)
-
-
-                }
-                    // this.mapLayers = garbage_markers
-
-
-            )
-
-        // console.log('fetch months ago')
-        this.issuesService.fetch_issues(today, monthsAgo, 'CONFIRMED|IN_PROGRESS|RESOLVED')
-            .subscribe(
-                data => { this.allIssuesLastMonths = data },
-                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
-                () => {
-                    this.allIssuesLastMonths.forEach((element) => {
-                        element.status == "RESOLVED" ? this.solutionsLastMonths.push(element) : this.openIssuesLastMonths.push(element)
-                    })
+                    this.displaysIssuesOnMap()
                 }
             )
+    }
 
-        // console.log('fetch last 6 issues')
-        this.issuesService.fetch_last_6_issues()
-            .subscribe(
-                data => { this.issuesLast6 = data; console.log(data) },
-                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
-                () => {
-                    this.issuesLast6.forEach((element) => {
-                        element.created_ago = moment(new Date(element.create_at)).locale(this.initial_language).fromNow()
-                        element.icon = this.issuesService.get_issue_icon(element.issue)
-                        element.image_URL = this.issuesService.API + "/image_issue?bug_id=" + element.bug_id + "&resolution=small"
-                    })
-                }
-            )
-
-        // console.log('fetch feelings last 7 days')
+    fetchLast7DaysFeelings(today, sevenDaysAgo) {
         this.issuesService.fetch_feelings(today, sevenDaysAgo, 'happy|neutral|angry')
             .subscribe(
                 data => { this.feelingsLast7days = data },
@@ -232,7 +170,6 @@ export class OverviewComponent implements OnInit {
                 () => {
                     this.feelingsMarkers = []
                     this.feelingsLast7days.forEach((element) =>{
-                        // console.log(element)
                         let marker = this.issuesService.get_feeling_marker(element.issue)
                         let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                             icon: marker.icon,
@@ -244,21 +181,64 @@ export class OverviewComponent implements OnInit {
                         let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element.issue})
                         this.feelingsMarkers.push(issueMarker)
                     })
-                    // console.log(this.feelingsMarkers)
                 }
             )
-
-
     }
 
+    fetchLastMonthsIssues(today, monthsAgo) {
+        this.issuesService.fetch_issues(today, monthsAgo, 'CONFIRMED|IN_PROGRESS|RESOLVED')
+            .subscribe(
+                data => {
+                    this.allIssuesLastMonths = data
+                    this.issuesService.allIssuesLastMonths = data
+                },
+                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
+                () => {
+                    // this.openIssuesLastMonths = []
+                    // this.solutionsLastMonths = []
+                    // this.allIssuesLastMonths.forEach((element) => {
+                    //     element.status == "RESOLVED" ? this.solutionsLastMonths.push(element) : this.openIssuesLastMonths.push(element)
+                    // })
+                    //
+                    // this.issuesService.openIssuesLastMonths = this.openIssuesLastMonths
+                    // this.issuesService.solutionsLastMonths = this. solutionsLastMonths
+                }
+            )
+    }
+
+    fetchLastMonthsSolutions(today, monthsAgo) {
+        this.issuesService.fetch_issues(today, monthsAgo, 'RESOLVED')
+            .subscribe(
+                data => {
+                    this. solutionsLastMonths = data
+                    this.issuesService.solutionsLastMonths = this. solutionsLastMonths
+                },
+                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
+                () => { }
+            )
+    }
+
+    fetchLast6Issues() {
+        this.issuesService.fetch_last_6_issues()
+            .subscribe(
+                data => { this.issuesLast6 = data },
+                error => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR')),
+                () => {
+                    this.issuesLast6.forEach((element) => {
+                        element.created_ago = moment(new Date(element.create_at)).locale(this.initial_language).fromNow()
+                        element.icon = this.issuesService.get_issue_icon(element.issue)
+                        element.image_URL = this.issuesService.API + "/image_issue?bug_id=" + element.bug_id + "&resolution=small"
+                    })
+                }
+            )
+    }
+
+    // staticPointsLayerControl
     onMapReady(map: L.Map){
-        console.log("map ready")
-        // console.log(map);
         map.scrollWheelZoom.disable()
         this.issuesService.fetch_fixed_points()
         .subscribe(
             data => {
-                // console.log(data);
                 let StaticGarbageMarkers:L.Layer[] = []
                 let StaticLightingMarkers:L.Layer[] = []
                 for (let FixPnt of data) {
@@ -297,7 +277,6 @@ export class OverviewComponent implements OnInit {
                     }
                 }
 
-                // console.log(StaticGarbageMarkers)
                 this.markerClusterData =  StaticLightingMarkers.concat(StaticGarbageMarkers);
                 this.markerClusterOptions = {
                     disableClusteringAtZoom: 19,
@@ -308,20 +287,89 @@ export class OverviewComponent implements OnInit {
                     chunkedLoading: true
                 }
 
-                let overlayTitle = "<span class='fa fa-map-marker fa-2x'></span> " + this.translationService.get_instant('FIXED_POINTS');
-                this.layersControl['overlays'][overlayTitle] = this.markerClusterGroup
-
-                // console.log(this.layersControl)
-                L.control.layers({}, this.layersControl['overlays']).addTo(map)
-
+                // let overlayTitle = "<span class='fa fa-map-marker fa-2x'></span> " + this.translationService.get_instant('FIXED_POINTS');
+                // this.layersControl['overlays'] = {}
+                // this.layersControl['overlays'][overlayTitle] = this.markerClusterGroup
+                //
+                // this.staticPointsLayerControl = L.control.layers({}, this.layersControl['overlays']).addTo(map)
 
 
             },
             error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
             () => {    }
         )
-        // map.on ('layeradd', (ev:L.LeafletMouseEvent) => {console.log(ev)});
-        // map.on ('click', (ev:L.LeafletMouseEvent) => {console.log(ev)});
+    }
+
+    displaysIssuesOnMap () {
+        this.mapLayers = []
+        let garbage_markers = []
+        let lighting_markers = []
+        let plumbing_markers = []
+        let road_markers = []
+        let protection_markers = []
+        let green_markers = []
+        let environment_markers = []
+
+        this.issuesLast7days.forEach((element) =>{
+            let icon = this.issuesService.get_issue_icon(element.issue)
+            let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+                icon: icon,
+                markerColor: 'red',
+                prefix: 'fa',
+            })
+            let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element._id}).bindPopup(null);;
+            switch (element.issue) {
+                case 'garbage':
+                    garbage_markers.push(issueMarker)
+                    break;
+                case 'lighting':
+                    lighting_markers.push(issueMarker)
+                    break;
+                case 'plumbing':
+                    plumbing_markers.push(issueMarker)
+                    break;
+                case 'road-constructor':
+                    road_markers.push(issueMarker)
+                    break;
+                case 'protection-policy':
+                    protection_markers.push(issueMarker)
+                    break;
+                case 'green':
+                    green_markers.push(issueMarker)
+                    break;
+                case 'environment':
+                    environment_markers.push(issueMarker)
+            }
+            issueMarker.on('click', ev => {
+                this.createMarkerPopup (issueMarker, ev)
+            })
+        })
+
+        this.layersControl['overlays']= {}
+
+        let fixedPointsOverlayTitle = "<span class='fa fa-map-marker fa-2x'></span> " + this.translationService.get_instant('FIXED_POINTS');
+
+        this.layersControl['overlays'] = {
+            [this.translationService.get_instant('GARBAGE')]: L.layerGroup(garbage_markers),
+            [this.translationService.get_instant('LIGHTING')]: L.layerGroup(lighting_markers),
+            [this.translationService.get_instant('ROAD-CONSTRUCTOR')]: L.layerGroup(road_markers),
+            [this.translationService.get_instant('PROTECTION-POLICY')]: L.layerGroup(protection_markers),
+            [this.translationService.get_instant('GREEN')]: L.layerGroup(green_markers),
+            [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers),
+            [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
+
+        }
+
+
+        for (let layer in this.layersControl['overlays']) {
+            this.mapLayers.push(this.layersControl['overlays'][layer])
+        }
+
+        this.layersControl['overlays'][this.translationService.get_instant('CITIZEN_MOOD')] = L.layerGroup(this.feelingsMarkers)
+
+        if (this.markerClusterGroup) {
+            this.layersControl['overlays'][fixedPointsOverlayTitle] = this.markerClusterGroup
+        }
     }
 
 
@@ -329,10 +377,7 @@ export class OverviewComponent implements OnInit {
         this.markerClusterGroup = group;
     }
 
-    carouselReady(event: Event) {
-       console.log(event)
-       console.log("carousel load")
-    }
+    carouselReady(event: Event) {    }
 
     imageLoadError(image_index) {
         this.brokenImages[image_index] = true;
@@ -341,9 +386,6 @@ export class OverviewComponent implements OnInit {
     createMarkerPopup (issueMarker, ev) {
         if (issueMarker.isPopupOpen() == true) {
             this.zone.run( () => {
-                console.log(ev)
-                console.log(issueMarker)
-
                 if(this.compRef) this.compRef.destroy();
 
                 const compFactory = this.resolver.resolveComponentFactory(PopupComponent);
@@ -369,5 +411,9 @@ export class OverviewComponent implements OnInit {
                 });
             })
         }
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.unsubscribe()
     }
 }

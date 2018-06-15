@@ -225,6 +225,15 @@ h3 {
         left: 0;
     }
 } */
+.map-header {
+    display:flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.mat-button-toggle-checked .color_teal {
+    color:#00897B;
+}
 
 .sub-form::before {
     display: block;
@@ -275,4 +284,10 @@ h3 {
 
 .subscibe-button {
     margin-top:1.5em;
+}
+
+@media (max-width:700px) {
+    .map-header {
+        display:block;
+    }
 }

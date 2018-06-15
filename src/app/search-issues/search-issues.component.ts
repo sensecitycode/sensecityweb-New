@@ -3,6 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DateAdapter } from '@angular/material/core';
 import { ObservableMedia } from '@angular/flex-layout';
+import { ActivatedRoute } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 
@@ -49,7 +50,8 @@ export class SearchIssuesComponent implements OnInit {
         private resolver: ComponentFactoryResolver,
         private injector: Injector,
         private appRef: ApplicationRef,
-        private zone: NgZone) { }
+        private zone: NgZone,
+        private route: ActivatedRoute) { }
 
     compRef: ComponentRef<PopupComponent>;
     mapInit: {};
@@ -90,7 +92,6 @@ export class SearchIssuesComponent implements OnInit {
     subscription = new Subscription()
     ngOnInit() {
         let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
-        // let garbageLayer = L.layerGroup()
         let googleRoadMap = UntypedL.gridLayer.googleMutant({
             type: 'roadmap',
             maxZoom: 18
@@ -114,11 +115,6 @@ export class SearchIssuesComponent implements OnInit {
             'Google Maps Satellite': googleHybrid,
         }
 
-        // console.log(this.startDate)
-        // console.log(this.startDate.toISOString())
-        // console.log(this.endDate)
-        // console.log(this.endDate.toISOString())
-
         this.searchForm = new FormGroup({
             issue: new FormControl(this.issue_types),
             status: new FormControl([this.status_types[0], this.status_types[1]]),
@@ -128,14 +124,32 @@ export class SearchIssuesComponent implements OnInit {
             bugId: new FormControl('')
         })
 
+        this.dateAdapter.setLocale(this.translationService.getLanguage())
+
         this.subscription.add(
             this.translationService.languageChanged.subscribe(
                 lang => {
-                    // console.log(lang)
                     this.dateAdapter.setLocale(lang)
                 }
             )
         )
+
+        // in case search component is loaded with default search params
+        if (this.route.snapshot.queryParams.hasOwnProperty('query')) {
+            switch (this.route.snapshot.queryParams.query) {
+                case '1':
+                    this.fetchLast7DaysIssues()
+                    break
+                case '2':
+                    this.fetchLast7DaysFeelings()
+                    break
+                case '3':
+                    this.fetchLastMonthsIssues()
+                    break
+                case '4':
+                    this.fetchLastMonthsSolutions()
+            }
+        }
     }
 
     markersObject = {
@@ -164,7 +178,6 @@ export class SearchIssuesComponent implements OnInit {
         this.mapLayers = []
         this.layersControl['overlays'] = {}
 
-        console.log(this.searchForm.value)
         let _startdate = this.searchForm.get('startDate').value.format("YYYY-MM-DD")
         let _enddate = this.searchForm.get('endDate').value.format("YYYY-MM-DD")
         let searchObj = {
@@ -178,7 +191,7 @@ export class SearchIssuesComponent implements OnInit {
             let issueSearchResult = [];
             this.issuesService.search_issue({'bug_id': this.searchForm.get('bugId').value})
             .subscribe(
-                data => {console.log(data); issueSearchResult = data},
+                data => {issueSearchResult = data},
                 error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
                 () => {
                     if (issueSearchResult.length > 0) {
@@ -214,7 +227,6 @@ export class SearchIssuesComponent implements OnInit {
             }
 
             if (this.searchForm.get('feelings').value.length > 0) {
-                console.log("GET FEELING")
                 feelingsObj = {
                     feeling: this.searchForm.get('feelings').value.map( obj => {return obj['type']} ).join("|"),
                     startdate: _startdate,
@@ -223,7 +235,7 @@ export class SearchIssuesComponent implements OnInit {
                 let searchFeelingsResult = []
                 this.issuesService.fetch_feelings(_enddate, _startdate, this.searchForm.get('feelings').value.map( obj => {return obj['type']} ).join("|"))
                 .subscribe(
-                    data => {console.log(data); searchFeelingsResult = data},
+                    data => { searchFeelingsResult = data},
                     error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
                     () => {
                         searchFeelingsResult.forEach((element) => {
@@ -239,13 +251,12 @@ export class SearchIssuesComponent implements OnInit {
 
                             this.markersObject['feelings_markers'].push(issueMarker)
                         })
-                        console.log(this.markersObject['feelings_markers'])
 
                         if (searchFeelingsResult.length > 0) {
                             this.layersControl['overlays'][this.translationService.get_instant('CITIZEN_MOOD')] = L.layerGroup(this.markersObject['feelings_markers'])
 
                             this.mapLayers.push(this.layersControl['overlays'][this.translationService.get_instant('CITIZEN_MOOD')])
-                            console.log(this.layersControl)
+
                             this.totalSearchIssues += searchFeelingsResult.length
 
                         }
@@ -255,22 +266,19 @@ export class SearchIssuesComponent implements OnInit {
             }
 
             this.searchForm.get('issue').value.forEach( searchItem => {
-                // console.log(item)
                 searchObj['issue'] = searchItem.type
                 let icon = searchItem.icon
                 let markerName = searchItem.markers
                 let type = searchItem.type
-                // console.log(searchObj)
                 let searchIssueResults = []
                 this.issuesService.search_issue(searchObj)
                 .subscribe(
-                    data => {console.log(data); searchIssueResults = data},
+                    data => {searchIssueResults = data},
                     error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
                     () => {
-
                         searchIssueResults.forEach((element) => {
                             let AwesomeMarker;
-                            console.log(icon)
+
                             if (element.status != "RESOLVED") {
                                 AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                                     icon: icon,
@@ -297,7 +305,7 @@ export class SearchIssuesComponent implements OnInit {
                             this.layersControl['overlays'][this.translationService.get_instant(type.toUpperCase())] = L.layerGroup(this.markersObject[markerName])
 
                             this.mapLayers.push(this.layersControl['overlays'][this.translationService.get_instant(type.toUpperCase())])
-                            console.log(this.layersControl['overlays'])
+
                             this.totalSearchIssues += searchIssueResults.length
                         }
                     }
@@ -308,21 +316,12 @@ export class SearchIssuesComponent implements OnInit {
 
 
             })
-
-            console.log(this.markersObject)
-
         }
-
-        // console.log(searchObj)
-        // console.log(feelingsObj)
     }
 
     createMarkerPopup (issueMarker, ev) {
         if (issueMarker.isPopupOpen() == true) {
             this.zone.run( () => {
-                console.log(ev)
-                console.log(issueMarker)
-
                 if(this.compRef) this.compRef.destroy();
 
                 const compFactory = this.resolver.resolveComponentFactory(PopupComponent);
@@ -350,8 +349,37 @@ export class SearchIssuesComponent implements OnInit {
         }
     }
 
-    onMapReady(map: L.Map) {
-        console.log("map ready")
+    onMapReady(map: L.Map) {    }
+
+    fetchLast7DaysIssues() {
+        this.searchForm.patchValue({startDate:moment(new Date()).subtract(7, 'days')})
+        this.submitSearch()
+    }
+
+    fetchLast7DaysFeelings() {
+        this.searchForm.patchValue({
+            startDate:moment(new Date()).subtract(7, 'days'),
+            feelings: this.feelings_types
+        })
+        this.submitSearch()
+
+
+    }
+
+    fetchLastMonthsIssues() {
+        this.searchForm.patchValue({
+            status: [this.status_types[0],this.status_types[1],this.status_types[2]],
+            startDate:moment(new Date()).subtract(2, 'months')
+        })
+        this.submitSearch()
+    }
+
+    fetchLastMonthsSolutions() {
+        this.searchForm.patchValue({
+            status: [this.status_types[2]],
+            startDate:moment(new Date()).subtract(2, 'months')
+        })
+        this.submitSearch()
     }
 
     ngOnDestroy() {

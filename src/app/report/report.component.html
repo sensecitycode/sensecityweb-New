@@ -68,9 +68,9 @@
                                                         </mat-select>
                                                     </mat-form-field>
                                                     <mat-form-field class="full-width" *ngIf ="subtypeOtherSelected" >
-                                                        <input matInput maxlength="50" #short_desc placeholder="{{'SHORT_DESC' | translate}}" formControlName="issue_misc_desc" [required]=subtypeOtherSelected/>
+                                                        <input matInput maxlength="40" #short_desc placeholder="{{'SHORT_DESC' | translate}}" formControlName="issue_misc_desc" [required]=subtypeOtherSelected/>
                                                         <!-- <mat-hint align="start">{{'SHORT_DESC_HINT' | translate}}</mat-hint> -->
-                                                        <mat-hint align="end">{{short_desc.value.length}} / 50</mat-hint>
+                                                        <mat-hint align="end">{{short_desc.value.length}} / 40</mat-hint>
                                                         <mat-error *ngIf="issueReportForm.controls.issue_misc_desc.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                                     </mat-form-field>
                                                     <div class="input-group" style="padding: 0.4375em 0;">
@@ -98,7 +98,7 @@
 
                                         <div class="row stepper_nav_buttons">
                                             <div class="col-12 text-right">
-                                                <button mat-raised-button color="primary" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
+                                                <button mat-raised-button class="grey300-material-palette" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -120,7 +120,7 @@
                                         <div *ngIf="issueCityPolicy?.add_issue == 1">
                                             <div class="row" >
                                                 <div class="col-md-6" >
-                                                    <mat-checkbox [(ngModel)]="eponymousCheckbox" color="primary" #eponymousCheckboxRef (change)="checkEponymoys($event)">{{'EPONYMOUS_REPORT' | translate}}</mat-checkbox>
+                                                    <mat-checkbox [(ngModel)]="eponymousCheckbox" color="accent" #eponymousCheckboxRef (change)="checkEponymoys($event)">{{'EPONYMOUS_REPORT' | translate}}</mat-checkbox>
                                                 </div>
                                             </div>
                                             <div class="row" *ngIf='eponymousCheckbox'>
@@ -163,10 +163,10 @@
 
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                         <div class="col-6 text-right" *ngIf="issueCityPolicy?.add_issue == 1">
-                                            <button mat-raised-button color="primary" matStepperNext>{{'NEXT' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperNext>{{'NEXT' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
@@ -226,10 +226,10 @@
                                     </div>
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <button mat-raised-button color="primary" matStepperNext>{{'NEXT' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperNext>{{'NEXT' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
@@ -254,7 +254,16 @@
                                                             <span *ngIf ='!emailActivated && mobileActivated'>{{'CERTIFIED_MOBILE' | translate}}</span>
                                                         </div>
 
+                                                        <div *ngIf = '!checkActivatedGuards()'>
+                                                            {{'CERTIFICATION_DESC' | translate}}
+                                                        </div>
+
                                                         <div *ngIf = 'emailChecked && !emailActivated'>
+                                                            <div class="row" style="margin-top:1em">
+                                                                <div class="col-12">
+                                                                    <strong>{{eponymousReportForm.controls.email.value}}</strong>
+                                                                </div>
+                                                            </div>
                                                             <div class="row">
                                                                 <div class="col-md-4">
                                                                     <div class="row">
@@ -271,10 +280,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4 flex-vertical-align">
-                                                                    <button mat-button color="basic" style="background-color:#ddd" (click)="requestEmailCode()" [disabled]="emailCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                                    <button mat-raised-button color="primary" (click)="requestEmailCode()" [disabled]="emailCodeSent">{{'REQUEST_CODE' | translate}}</button>
                                                                 </div>
                                                                 <div class="col-md-4 flex-vertical-align">
-                                                                    <button mat-button color="basic" style="background-color:#ddd" (click)="activateEmail(emailCertCode.value)">{{'CERTIFICATION' | translate}}</button>
+                                                                    <button mat-button color="primary" style="background-color:#ddd" (click)="activateEmail(emailCertCode.value)">{{'CERTIFICATION' | translate}}</button>
                                                                 </div>
 
                                                                 <div class="col-12" *ngIf="emailCodeSent && !emailActivated">
@@ -284,6 +293,11 @@
                                                         </div>
 
                                                         <div *ngIf = 'smsChecked && !mobileActivated'>
+                                                            <div class="row" style="margin-top:1em">
+                                                                <div class="col-12">
+                                                                    <strong>{{eponymousReportForm.controls.mobile.value}}</strong>
+                                                                </div>
+                                                            </div>
                                                             <div class="row">
                                                                 <div class="col-md-4">
                                                                     <div class="row">
@@ -299,7 +313,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4 flex-vertical-align">
-                                                                    <button mat-button color="basic" style="background-color:#ddd" (click)="requestMobileCode()" [disabled]="mobileCodeSent">{{'REQUEST_CODE' | translate}}</button>
+                                                                    <button mat-raised-button color="primary" (click)="requestMobileCode()" [disabled]="mobileCodeSent">{{'REQUEST_CODE' | translate}}</button>
                                                                 </div>
                                                                 <div class="col-md-4 flex-vertical-align">
                                                                     <button mat-button color="basic" style="background-color:#ddd" (click)="activateMobile(mobileCertCode.value)">{{'CERTIFICATION' | translate}}</button>
@@ -318,10 +332,10 @@
                                     </div>
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <button mat-raised-button color="primary" matStepperNext [disabled]="!checkActivatedGuards() && eponymousCheckbox">{{'NEXT' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperNext [disabled]="!checkActivatedGuards() && eponymousCheckbox">{{'NEXT' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>
@@ -342,13 +356,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-12">
-                                                <button mat-raised-button color="basic" style="background-color:#eee" (click)="sendIssueReport()" [disabled]="issueReportSent">{{'SUBMIT_REPORT_BUTTON' | translate}}</button>
+                                                <button mat-raised-button color="accent" (click)="sendIssueReport()" [disabled]="issueReportSent || (!checkActivatedGuards() && eponymousCheckbox)">{{'SUBMIT_REPORT_BUTTON' | translate}}</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row stepper_nav_buttons">
                                         <div class="col-6 text-left">
-                                            <button mat-raised-button color="primary" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
+                                            <button mat-raised-button class="grey300-material-palette" matStepperPrevious>{{'PREVIOUS' | translate}}</button>
                                         </div>
                                     </div>
                                 </mat-step>

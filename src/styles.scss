@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import '~@angular/material/theming';
-$custom-typography: mat-typography-config(
-    $font-family: 'Open Sans, sans-serif'
-);
-@include angular-material-typography($custom-typography);
+// @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+// @import '~@angular/material/theming';
+// $custom-typography: mat-typography-config(
+//     $font-family: 'Open Sans, sans-serif'
+// );
+// @include angular-material-typography($custom-typography);
 
 body {
     background-color: #eee !important;
@@ -39,6 +39,17 @@ body {
     min-width: inherit !important;
 }
 
+.grey300-material-palette {
+    background-color: #e0e0e0 !important;
+    // color: rgba(0, 0, 0, 0.87) !important;
+}
+
+
+// google street view i-frame
+
+.gm-iv-address {
+    height: auto !important;
+}
 
 
 /*  */
@@ -52,6 +63,10 @@ body {
 .mat-pseudo-checkbox-checked::after {
     top: 6px !important;
     left: 4px !important;
+}
+
+.mat-step-header .mat-step-icon {
+    background-color: #00897B !important;
 }
 /*  */
 /*  */

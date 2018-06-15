@@ -23,14 +23,11 @@ export class AppComponent {
 
     ngOnInit() {
         this.subscription = this.router.events.subscribe(event => {
-            // console.log(event)
             if (event instanceof NavigationEnd) {
-            // console.log(event)
                 ga('set', 'page', event.urlAfterRedirects);
                 ga('send', 'pageview');
 
                 if( event.urlAfterRedirects == '/overview') {
-                    // console.log('arxikh');
                     (<any>window).twttr =(function(d, s, id) {
                     let js, fjs = d.getElementsByTagName(s)[0],
                     t = (<any>window).twttr || {};

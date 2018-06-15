@@ -14,7 +14,6 @@ export class EnvironmentSpecificResolver implements Resolve<EnvSpecific> {
             this.envSpecificSvc.setEnvSpecific(es);
             return this.envSpecificSvc.envSpecific;
         }, error => {
-            console.log(error);
             return null;
         });
     }

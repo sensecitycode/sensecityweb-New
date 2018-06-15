@@ -25,23 +25,13 @@ export class IssuesService {
         lng:number,
         zoom:number
     }
-
-
-    // fetch_issues(reqparams) {
-    //     //
-    //     //awaiting migrate
-    //     // this.uuid = 'dGVzdDIxMjM0NTY3OFdlZCBNYXIgMjggMjAxOCAxODo0NjozMSBHTVQrMDMwMCAoRUVTVCk=';
-    //     // this.role = 'cityAdmin';
-    //     //
-    //     //
-    //     reqparams.city = this.city;
-    //     console.log("fetch_issues");
-    //     const reqheaders = new HttpHeaders().set('x-uuid', this.uuid).append('x-role', this.role);
-    //     return this.httpClient.get<any>(`${this.API}/admin/issue`,{params: reqparams, headers: reqheaders})
-    // }
+    issuesLast7days = []
+    feelingsLast7days = []
+    allIssuesLastMonths = []
+    openIssuesLastMonths = []
+    solutionsLastMonths = []
 
     fetch_issues(_enddate,_startdate, _status) {
-        console.log("fetch_issues")
         let reqparams = {
             city: this.city,
             startdate: _startdate,
@@ -50,12 +40,10 @@ export class IssuesService {
             includeAnonymous: '0',
             status: _status
         }
-        console.log(reqparams)
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
     }
 
     fetch_limited_issues(_limit, _offset) {
-        console.log("fetch_issues")
         let reqparams = {
             city: this.city,
             startdate: "2017-01-01",
@@ -64,13 +52,10 @@ export class IssuesService {
             sort: "-1",
             status: "CONFIRMED|IN_PROGRESS|RESOLVED"
         }
-        console.log(reqparams)
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
     }
 
     fetch_last_6_issues() {
-        console.log("fetch_last_6_issues")
-
         let reqparams = {
             city: this.city,
             image_field: '1',
@@ -79,13 +64,11 @@ export class IssuesService {
             sort: '-1',
             startdate: '2017-01-01'
         }
-        console.log(reqparams)
 
         return this.httpClient.get<any>(`${this.API}/issue`, {params:reqparams})
     }
 
     fetch_feelings(_enddate,_startdate,_feeling) {
-        console.log("fetch_feelings")
 
         let reqparams = {
             city: this.city,
@@ -93,19 +76,16 @@ export class IssuesService {
             enddate: _enddate,
             feeling: _feeling
         }
-        console.log(reqparams)
 
         return this.httpClient.get<any>(`${this.API}/feelings`, {params:reqparams})
     }
 
     fetch_fullIssue(issueID) {
-        console.log("fetch_fullIssue")
         return this.httpClient.get<any>(`${this.API}/fullissue/${issueID}`)
     }
 
     search_issue(searchParams){
         searchParams['city'] = this.city
-        console.log(searchParams)
         return this.httpClient.get<any>(`${this.API}/issue`, {params:searchParams})
     }
 
@@ -127,7 +107,6 @@ export class IssuesService {
 
     fetch_city_policy(lat, lng) {
         let httpParams = new HttpParams().append("lat", lat).append("long", lng)
-        // console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_city_policy`, {}, {params:httpParams} )
     }
 
@@ -150,65 +129,47 @@ export class IssuesService {
         if (email!="") request_params['email'] = email
         if (mobile!="") request_params['mobile'] = mobile
 
-        console.log(request_params)
         return this.httpClient.post<any>(`${this.API}/is_activate_user`, request_params)
     }
 
     request_email_code(name, email) {
         let httpParams = new HttpParams().append("uuid", "web-site").append("name", name).append("email", email)
-        console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_user`, {}, {params:httpParams} )
     }
 
     activate_email(email ,code) {
         let httpParams = new HttpParams().append("uuid", "web-site").append("email", email).append("code", code)
-        console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_email`, {}, {params:httpParams} )
     }
 
     request_mobile_code(name, mobile, lat, long) {
         let httpParams = new HttpParams().append("uuid", "web-site").append("name", name).append("mobile", mobile).append("lat", lat).append("long", long).append("city", this.city)
-        console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_user`, {}, {params:httpParams} )
     }
 
     activate_mobile(mobile ,code) {
         let httpParams = new HttpParams().append("uuid", "web-site").append("mobile", mobile).append("code", code)
-        console.log(httpParams)
         return this.httpClient.post<any>(`${this.API}/activate_mobile`, {}, {params:httpParams} )
     }
 
     issue_report_anon (issue) {
-        console.log(issue)
         return this.httpClient.post<any>(`${this.API}/issue`, issue)
     }
 
     make_issue_eponymous (issue_id, user_data) {
-        console.log(issue_id)
-        console.log(user_data)
         return this.httpClient.post<any>(`${this.API}/issue/${issue_id}`, user_data)
     }
 
     issue_subscribe (subscription) {
-        console.log(subscription)
         return this.httpClient.post<any>(`${this.API}/issue_subscribe`, subscription)
     }
 
     issue_subscribe_register (subscription, files) {
-        console.log(subscription)
-        console.log(files)
-        return this.httpClient.post<any>(`${this.API}/issue_register`, files, { params:subscription})
+        return this.httpClient.post(`${this.API}/issue_register`, files, { params:subscription, responseType:'text'})
     }
 
 
     fetch_issue_comment(bug_id) {
-        //
-        //awaiting migrate
-        // this.uuid = 'dGVzdDIxMjM0NTY3OFdlZCBNYXIgMjggMjAxOCAxODo0NjozMSBHTVQrMDMwMCAoRUVTVCk=';
-        // this.role = 'cityAdmin';
-        //
-        //
-        console.log("fetch_issue_comment");
         const reqheaders = new HttpHeaders().set('x-uuid', this.uuid).append('x-role', this.role);
         return this.httpClient.post<any>(`${this.API}/admin/bugs/comment`, {id:bug_id}, {headers: reqheaders})
     }
@@ -261,7 +222,6 @@ export class IssuesService {
     }
 
     get_sensors() {
-        console.log("get_sensors")
         let sensors = []
         switch (this.city) {
             case 'patras':
@@ -279,19 +239,7 @@ export class IssuesService {
 
     updateIssueStatus = new Subject();
     update_bug(update_obj, comment, files) {
-        // this.uuid = 'dGVzdDIxMjM0NTY3OFdlZCBNYXIgMjggMjAxOCAxODo0NjozMSBHTVQrMDMwMCAoRUVTVCk=';
-        // this.role = 'cityAdmin';
-        console.log("bug_update");
-
-        //add mantatory field 'product' at update object
         update_obj['product'] = this.city;
-
-
-
-        console.log(update_obj)
-        console.log(comment)
-        console.log(files)
-
         const reqheaders = new HttpHeaders().set('x-uuid', this.uuid).append('x-role', this.role);
         this.httpClient.post<any>(`${this.API}/admin/bugs/update`, update_obj, {headers: reqheaders})
         .subscribe(
@@ -342,7 +290,6 @@ export class IssuesService {
     get_address_coordinates(address) {
         this.city != 'testcity1' ? address += ` ,${this.city}` : address += ' ,patra';
         let query_lang = this.translationService.getLanguage();
-        // console.log(address)
         return this.httpClient.get<any>(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&sensor=false&language=${query_lang}&key=${this.googleKey}`)
     }
 }

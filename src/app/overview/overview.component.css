@@ -31,6 +31,12 @@
     font-weight: bold
 }
 
+.out_of {
+    font-weight: initial;
+    font-size: 18px;
+    color: #555;
+}
+
 .card-stats .card-content {
     /* text-align: right; */
     /* padding-top: 10px; */
@@ -112,7 +118,7 @@ small {
 
 .bannerStyle .carousel-image-container {
     /* background-color: #6b6b6b; */
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: #37474f;
     padding:.5em 0;
     text-align: center;
     color: #fff;
@@ -137,6 +143,8 @@ small {
 
 .category-desc-carousel {
     margin-bottom:0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 
@@ -173,6 +181,19 @@ small {
     right: 0;
 }
 
-#twitter-widget-0 {
+/* #twitter-widget-0 {
     min-height: 100%;
+} */
+
+.widget-container {
+    display:flex;
+    flex:auto;
+}
+
+@media screen and (max-width: 992px) {
+    .widget-container {
+        display:flex;
+        flex:auto;
+        min-height: 400px;
+    }
 }

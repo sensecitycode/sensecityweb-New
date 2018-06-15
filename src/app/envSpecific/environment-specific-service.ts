@@ -16,7 +16,6 @@ export class EnvironmentSpecificService {
     private envSpecificSubject: BehaviorSubject<EnvSpecific> = new BehaviorSubject<EnvSpecific>(null);
 
     constructor( private http: HttpClient) {
-        // console.log('EnvironmentSpecificService created');
     }
 
     public loadEnvironment() {
@@ -36,7 +35,6 @@ export class EnvironmentSpecificService {
         }
 
         this.envSpecific = es;
-        // console.log(this.envSpecific);
 
         if (this.envSpecificSubject) {
             this.envSpecificSubject.next(this.envSpecific);
