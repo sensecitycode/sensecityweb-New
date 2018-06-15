@@ -22,7 +22,7 @@ export class EnvironmentSpecificService {
         // Only want to do this once - if root page is revisited, it calls this again.
         if (this.envSpecific === null || this.envSpecific === undefined) {
 
-            return this.http.get<EnvSpecific>(`assets/env-specific/dev/config.json`)
+            return this.http.get<EnvSpecific>(`assets/env-specific/config.json`)
             .toPromise<EnvSpecific>();
         }
         return Promise.resolve(this.envSpecificNull);

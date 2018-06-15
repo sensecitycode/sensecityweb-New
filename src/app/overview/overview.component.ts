@@ -295,8 +295,8 @@ export class OverviewComponent implements OnInit {
 
 
             },
-            error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
-            () => {    }
+            error => { },
+            () => { }
         )
     }
 

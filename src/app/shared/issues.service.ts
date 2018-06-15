@@ -90,7 +90,7 @@ export class IssuesService {
     }
 
     fetch_fixed_points() {
-        return this.httpClient.get<any>(`assets/env-specific/dev/${this.city}.json`)
+        return this.httpClient.get<any>(`assets/env-specific/${this.city}.json`)
     }
 
     fetch_nearby_fixed_points(long, lat, type) {
