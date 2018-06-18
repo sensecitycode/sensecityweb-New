@@ -38,7 +38,7 @@ export class AppBootStrapComponent implements OnInit{
             this.issuesService.twitterId = this.TWITTER_WIDGET_IDS[hostname]
             this.issuesService.cityCenter = this.CITY_CENTERS[hostname]
         }
-
+        
         this.issuesService.API = this.API
         this.issuesService.API_HOST = this.API_HOST
         this.issuesService.googleKey = this.GOOGLE_KEY

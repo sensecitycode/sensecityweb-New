@@ -27,3 +27,11 @@
     opacity: 1;
     font-weight: bold;
 }
+
+.max-alert {
+    color: #721c24;
+    background-color: #e8ddde ;
+    border-color: #f4cace;
+    text-align: center;
+    font-weight: bold;
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ComponentRef, Injector, ApplicationRef, NgZone, OnDestroy, AfterViewInit  } from '@angular/core';
 import { PopupComponent } from '../shared/popup/popup.component'
 
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +18,7 @@ import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
 import * as moment from 'moment';
 
+declare var twttr: any;
 
 
 @Component({
@@ -29,7 +30,7 @@ import * as moment from 'moment';
 export class OverviewComponent implements OnInit {
 
     constructor(private translationService: TranslationService,
-                private issuesService: IssuesService,
+                public issuesService: IssuesService,
                 private toastr: ToastrService,
                 private resolver: ComponentFactoryResolver,
                 private injector: Injector,
@@ -40,7 +41,7 @@ export class OverviewComponent implements OnInit {
     initial_language = this.translationService.getLanguage()
 
     last_months_params:any
-    last_days_params = {days:'10'}
+    // last_days_params = {days:'10'}
     issuesLast7days = this.issuesService.issuesLast7days
     feelingsLast7days = this.issuesService.feelingsLast7days
     allIssuesLastMonths = this.issuesService.allIssuesLastMonths
@@ -76,7 +77,7 @@ export class OverviewComponent implements OnInit {
     subscriptions = new Subscription()
 
     ngOnInit() {
-        this.last_months_params = {months:'2'}
+        this.last_months_params = {months:'1'}
         let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
 
         let googleRoadMap = UntypedL.gridLayer.googleMutant({
@@ -119,8 +120,8 @@ export class OverviewComponent implements OnInit {
         let today = moment(new Date()).format("YYYY-MM-DD")
         let sevenDaysAgo = moment(today).subtract(7, 'days').format("YYYY-MM-DD")
 
-        // let monthsAgo = moment(today).subtract(this.last_months_params, 'months').format("YYYY-MM-DD")
-        let monthsAgo = moment(today).subtract(10, 'days').format("YYYY-MM-DD")
+        let monthsAgo = moment(today).subtract(this.last_months_params, 'months').format("YYYY-MM-DD")
+        // let monthsAgo = moment(today).subtract(10, 'days').format("YYYY-MM-DD")
 
 
         if (this.issuesService.issuesLast7days.length > 0 || this.issuesService.feelingsLast7days.length > 0 || this.issuesService.allIssuesLastMonths.length > 0) {
@@ -149,6 +150,10 @@ export class OverviewComponent implements OnInit {
         //     this.fetchLast6Issues()
         //     this.fetchLast7DaysFeelings(today, sevenDaysAgo)
         // }, 300000)
+    }
+
+    ngAfterViewInit() {
+        twttr.widgets.load();
     }
 
 

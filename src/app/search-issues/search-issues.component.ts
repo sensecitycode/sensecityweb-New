@@ -87,7 +87,7 @@ export class SearchIssuesComponent implements OnInit {
     startDate = moment(new Date()).subtract(3, 'days')
     endDate = moment(new Date())
 
-
+    maxIssuesAlert = false;
 
     subscription = new Subscription()
     ngOnInit() {
@@ -164,6 +164,8 @@ export class SearchIssuesComponent implements OnInit {
     }
     totalSearchIssues = 0
     submitSearch() {
+        this.maxIssuesAlert = false;
+
         this.markersObject = {
             garbage_markers : [],
             lighting_markers : [],
@@ -238,6 +240,8 @@ export class SearchIssuesComponent implements OnInit {
                     data => { searchFeelingsResult = data},
                     error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
                     () => {
+                        if (searchFeelingsResult.length == 1000) this.maxIssuesAlert = true;
+
                         searchFeelingsResult.forEach((element) => {
                             let marker = this.issuesService.get_feeling_marker(element.issue)
                             let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
@@ -276,6 +280,8 @@ export class SearchIssuesComponent implements OnInit {
                     data => {searchIssueResults = data},
                     error => { this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR') )},
                     () => {
+                        if (searchIssueResults.length == 1000) this.maxIssuesAlert = true;
+
                         searchIssueResults.forEach((element) => {
                             let AwesomeMarker;
 
@@ -311,9 +317,6 @@ export class SearchIssuesComponent implements OnInit {
                     }
 
                 )
-
-
-
 
             })
         }
@@ -369,7 +372,7 @@ export class SearchIssuesComponent implements OnInit {
     fetchLastMonthsIssues() {
         this.searchForm.patchValue({
             status: [this.status_types[0],this.status_types[1],this.status_types[2]],
-            startDate:moment(new Date()).subtract(2, 'months')
+            startDate:moment(new Date()).subtract(1, 'months')
         })
         this.submitSearch()
     }
@@ -377,7 +380,7 @@ export class SearchIssuesComponent implements OnInit {
     fetchLastMonthsSolutions() {
         this.searchForm.patchValue({
             status: [this.status_types[2]],
-            startDate:moment(new Date()).subtract(2, 'months')
+            startDate:moment(new Date()).subtract(1, 'months')
         })
         this.submitSearch()
     }

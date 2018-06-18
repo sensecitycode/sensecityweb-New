@@ -127,6 +127,11 @@
                     </div>
                 </div>
             </div>
+            <div class="card max-alert" style="margin-top:0" *ngIf="maxIssuesAlert">
+                <div class="card-body">
+                    {{'MAX_ISSUES_ALERT' | translate}}
+                </div>
+            </div>
         </div>
 
     </div>

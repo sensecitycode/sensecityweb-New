@@ -146,6 +146,7 @@
     "STATISTICS_DESC":"Number of issues per category",
     "ISSUE_ID":"Issue ID",
     "ISSUE_ID_HINT":"ignores other search fields",
+    "MAX_ISSUES_ALERT":"Issues are limited to 1000 per category for performance reasons",
 
     "ISSUE_SUBTYPES":
     {

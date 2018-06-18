@@ -30,6 +30,7 @@ export class IssueTimelineComponent implements OnInit {
     constructor(private translationService: TranslationService, private issuesService: IssuesService, private toastr: ToastrService, private activatedRoute:ActivatedRoute, private lightbox: Lightbox) { }
 
     initial_language = this.translationService.getLanguage();
+    issueID:string;
     issue:any = {}
 
     activeMap = 'leaflet';
@@ -49,7 +50,15 @@ export class IssueTimelineComponent implements OnInit {
 
 
     ngOnInit() {
-        this.fetchFullIssue()
+        if (this.activatedRoute.routeConfig.path == "issue/:id") {
+            this.issueID = this.activatedRoute.snapshot.params.id
+        } else {
+            this.issueID = this.activatedRoute.snapshot.queryParams.issue
+        }
+
+        if (this.issueID != undefined)
+            this.fetchFullIssue()
+
 
         let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
         this.mapInit = {
@@ -66,7 +75,7 @@ export class IssueTimelineComponent implements OnInit {
     }
 
     fetchFullIssue() {
-        this.issuesService.fetch_fullIssue(this.activatedRoute.snapshot.url[this.activatedRoute.snapshot.url.length - 1].path)
+        this.issuesService.fetch_fullIssue(this.issueID)
         .subscribe(
             data => {
                 if (data.length > 0) {
@@ -289,7 +298,7 @@ export class IssueTimelineComponent implements OnInit {
         let issueType = this.issue.issue;
 
         var sv = new google.maps.StreetViewService();
-        this.panorama = new google.maps.StreetViewPanorama(this.gmapElement.nativeElement);
+        this.panorama = new google.maps.StreetViewPanorama(this.gmapElement.nativeElement, {motionTracking: false, motionTrackingControl: false});
 
         sv.getPanoramaByLocation({lat: this.issue.loc.coordinates[1], lng: this.issue.loc.coordinates[0]}, 200, checkNearestStreetView);
 

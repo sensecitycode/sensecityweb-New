@@ -14,13 +14,14 @@ import { SearchIssuesComponent } from  './search-issues/search-issues.component'
 
 const appRoutes: Routes = [
     { path: '', component: AppBootStrapComponent, resolve: { envSpecific: EnvironmentSpecificResolver }, children:[
-        { path: 'overview', component: OverviewComponent },
+        { path: '', component: OverviewComponent },
         { path: 'boundaries', component: BoundariesComponent },
         { path: 'report', component: ReportComponent },
         { path: 'issue/:id', component: IssueTimelineComponent},
+        { path: 'scissuemap.html', component: IssueTimelineComponent},
         { path: 'issues', component: AllIssuesComponent },
         { path: 'search', component: SearchIssuesComponent },
-        { path: '**', redirectTo: 'overview', pathMatch: 'full'}
+        { path: '**', redirectTo: '/', pathMatch: 'full'}
     ]}
 ];
 

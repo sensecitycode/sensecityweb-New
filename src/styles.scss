@@ -92,38 +92,27 @@ body {
 }
 
 .card [data-background-color=green] {
-    // background: linear-gradient(60deg,#66bb6a,#43a047);
-    // background: linear-gradient(60deg,#66bb6a,#43a04770);
-    background: linear-gradient(60deg,#43a04770,#66bb6a);
+    background: linear-gradient(60deg,unquote("#43a04770"),#66bb6a);
     // box-shadow: 0 12px 20px -10px rgba(76,175,80,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(76,175,80,.2);
 }
 
 .card [data-background-color=orange] {
-    // background: linear-gradient(60deg,#ffa726,#fb8c00);
-    // background: linear-gradient(60deg,#ffa726,#fb8c0070);
-    background: linear-gradient(60deg,#fb8c0070,#ffa726);
+    background: linear-gradient(60deg,unquote("#fb8c0070"),#ffa726);
     // box-shadow: 0 12px 20px -10px rgba(255,152,0,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(255,152,0,.2);
 }
 
 .card [data-background-color=red] {
-    // background: linear-gradient(60deg,#ef5350,#e53935);
-    // background: linear-gradient(60deg,#ef5350,#e5393570);
-    background: linear-gradient(60deg,#e5393570,#ef5350);
+    background: linear-gradient(60deg,unquote("#e5393570"),#ef5350);
     // box-shadow: 0 12px 20px -10px rgba(244,67,54,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(244,67,54,.2);
 }
 
 .card [data-background-color=blue] {
-    // background: linear-gradient(60deg,#26c6da,#00acc1);
-    // background: linear-gradient(60deg,#26c6da,#00acc170);
-    background: linear-gradient(60deg,#005fc170, #2676da);
-
+    background: linear-gradient(60deg,unquote("#005fc170"), #2676da);
     // box-shadow: 0 12px 20px -10px rgba(0,188,212,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(0,188,212,.2);
 }
 
 .card [data-background-color=purple] {
-    // background: linear-gradient(60deg,#ab47bc,#8e24aa);
-    // background: linear-gradient(60deg,#ab47bc,#8e24aa70);
-    background: linear-gradient(60deg,#8e24aa70,#ab47bc);
+    background: linear-gradient(60deg,unquote("#8e24aa70"),#ab47bc);
     // box-shadow: 0 12px 20px -10px rgba(156,39,176,.28), 0 4px 20px 0 rgba(0,0,0,.12), 0 7px 8px -5px rgba(156,39,176,.2);
 }
 /*  */
@@ -153,6 +142,7 @@ body {
 .flex-space-between {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .flex-vertical-align {

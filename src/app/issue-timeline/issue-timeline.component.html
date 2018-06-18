@@ -65,7 +65,7 @@
                 <div class="card-body" style="margin: 0" *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
                     <p *ngIf='first'>{{ 'ADDRESS' | translate }}: <strong>{{issue.city_address}}</strong></p>
                     <div>{{ 'ASSIGNED_TO' | translate }}: <strong>{{progress.department}}</strong></div>
-                    <div style="margin-top:1rem" *ngIf='last && progress.state == "RESOLVED"'>{{ 'ASSIGNED_TO' | translate }}: <strong>{{issue.resolution}}</strong></div>
+                    <!-- <div style="margin-top:1rem" *ngIf='last && progress.state == "RESOLVED"'>{{ 'ASSIGNED_TO' | translate }}: <strong>{{issue.resolution}}</strong></div> -->
                 </div>
 
                 <div *ngIf="!last && progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div>
@@ -75,7 +75,7 @@
                         <div *ngFor="let fileURL of progress.fileURLs; index as fileIndex;" style="height: 4rem; width: 4rem; float: left; margin: 1.25rem; margin-right: 0">
                             <a *ngIf="progress.file_types[fileIndex] === 'application'" href="{{fileURL}}" class="file-thumb-wrapper fa fa-file-o"></a>
                             <a *ngIf="progress.file_types[fileIndex] === 'image'" href="{{fileURL}}" class="file-thumb-wrapper">
-                                <img  class="img-responsive img-text" src="{{fileURL}}&thumb=1" alt="image" style="width:100%">
+                                <img  class="img-responsive img-text" src="{{fileURL}}&thumb=1" alt="image" style ="max-height:100%; max-width:100%">
                             </a>
                         </div>
 
