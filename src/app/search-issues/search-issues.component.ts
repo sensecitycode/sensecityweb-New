@@ -334,7 +334,7 @@ export class SearchIssuesComponent implements OnInit {
                 const subscription = this.compRef.instance.fullIssueFetched.subscribe(
                     data => {
                         if (data) {
-                            setTimeout(()=> {issueMarker.getPopup().update()}, 1)
+                            setTimeout(()=> {issueMarker.getPopup().update()}, 0)
                         }
                     }
                 )

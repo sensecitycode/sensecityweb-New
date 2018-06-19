@@ -33,7 +33,13 @@ img {
 }
 
 .category-desc-carousel {
-    margin-bottom:0.5rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.card {
+    margin-bottom: 0
 }
 
 .card .card-content {
@@ -46,6 +52,6 @@ small {
 
 button {
     background-color: #fff;
-    margin-bottom: 25px;
+    margin: 25px 0px;
     padding: 8px 24px;
 }

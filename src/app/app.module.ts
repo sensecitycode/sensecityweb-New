@@ -59,6 +59,7 @@ import { AllIssuesComponent } from './all-issues/all-issues.component';
 import { SearchIssuesComponent } from './search-issues/search-issues.component';
 import { PopupComponent } from './shared/popup/popup.component';
 import { DialogComponent } from './shared/dialog/dialog.component';
+import { BugIdTranslateComponent } from './bug-id-translate/bug-id-translate.component';
 
 export function HttpLoaderFactory(httpclient:HttpClient) {
     return new TranslateHttpLoader(httpclient, './assets/i18n/', '.json');
@@ -78,7 +79,8 @@ registerLocaleData(localeEl);
         AllIssuesComponent,
         SearchIssuesComponent,
         PopupComponent,
-        DialogComponent
+        DialogComponent,
+        BugIdTranslateComponent
     ],
     entryComponents: [
         PopupComponent,

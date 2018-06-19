@@ -18,7 +18,7 @@ import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
 import * as moment from 'moment';
 
-declare var twttr: any;
+declare const twttr: any;
 
 
 @Component({
@@ -404,7 +404,7 @@ export class OverviewComponent implements OnInit {
                 const subscription = this.compRef.instance.fullIssueFetched.subscribe(
                     data => {
                         if (data) {
-                            setTimeout(()=> {issueMarker.getPopup().update()}, 1)
+                            setTimeout(()=> {issueMarker.getPopup().update()}, 0)
                         }
                     }
                 )

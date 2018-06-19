@@ -2,6 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IssuesService } from './shared/issues.service';
 
+declare const twttr: any;
+
 @Component({
     selector: 'app-bootstrap',
     template: '<router-outlet></router-outlet>',
@@ -38,7 +40,7 @@ export class AppBootStrapComponent implements OnInit{
             this.issuesService.twitterId = this.TWITTER_WIDGET_IDS[hostname]
             this.issuesService.cityCenter = this.CITY_CENTERS[hostname]
         }
-        
+
         this.issuesService.API = this.API
         this.issuesService.API_HOST = this.API_HOST
         this.issuesService.googleKey = this.GOOGLE_KEY

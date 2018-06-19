@@ -10,6 +10,7 @@ import { ReportComponent } from './report/report.component';
 import { IssueTimelineComponent } from './issue-timeline/issue-timeline.component';
 import { AllIssuesComponent } from './all-issues/all-issues.component';
 import { SearchIssuesComponent } from  './search-issues/search-issues.component';
+import { BugIdTranslateComponent } from './bug-id-translate/bug-id-translate.component';
 
 
 const appRoutes: Routes = [
@@ -19,6 +20,8 @@ const appRoutes: Routes = [
         { path: 'report', component: ReportComponent },
         { path: 'issue/:id', component: IssueTimelineComponent},
         { path: 'scissuemap.html', component: IssueTimelineComponent},
+        { path: 'bug/:id', component: BugIdTranslateComponent},
+        { path: 'bugid.html', component: BugIdTranslateComponent},
         { path: 'issues', component: AllIssuesComponent },
         { path: 'search', component: SearchIssuesComponent },
         { path: '**', redirectTo: '/', pathMatch: 'full'}
