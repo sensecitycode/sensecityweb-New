@@ -255,8 +255,8 @@ export class ReportComponent implements OnInit {
 
                     //
                     //for 2nd step
-                    this.smsChecked = (this.cityPolicy['mandatory_sms'].toLowerCase() === "true")
-                    this.emailChecked = (this.cityPolicy['mandatory_email'].toLowerCase() === "true")
+                    this.smsChecked = (this.cityPolicy['mandatory_sms'] === true)
+                    this.emailChecked = (this.cityPolicy['mandatory_email'] === true)
 
                     //
                     //for 3nd step

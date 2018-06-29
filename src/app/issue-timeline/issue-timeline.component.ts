@@ -375,8 +375,8 @@ export class IssueTimelineComponent implements OnInit {
             (error) => this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true}),
             () =>
             {
-                this.smsChecked = (this.cityPolicy['mandatory_sms'].toLowerCase() === "true")
-                this.emailChecked = (this.cityPolicy['mandatory_email'].toLowerCase() === "true")
+                this.smsChecked = (this.cityPolicy['mandatory_sms'] === true)
+                this.emailChecked = (this.cityPolicy['mandatory_email'] === true)
             }
         )
     }
