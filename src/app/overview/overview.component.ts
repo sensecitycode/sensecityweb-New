@@ -319,6 +319,8 @@ export class OverviewComponent implements OnInit {
         let green_markers = []
         let environment_markers = []
 
+        let sensor_markers = []
+
         this.issuesLast7days.forEach((element) =>{
             let icon = this.issuesService.get_issue_icon(element.issue)
             let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
@@ -354,6 +356,17 @@ export class OverviewComponent implements OnInit {
             })
         })
 
+        this.issuesService.get_sensors().forEach( (sensor) => {
+            let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+                icon: 'fa-bolt',
+                markerColor: 'orange',
+                prefix: 'fa',
+            })
+            let issueMarker = new L.Marker([sensor.loc.coordinates[1],sensor.loc.coordinates[0]], {icon: AwesomeMarker})
+                .bindPopup(`<center>${sensor.name}<br>${sensor.modelName}<br>${sensor.address}<br>${moment(sensor.lastUpdateTime).format("DD/MM/YY - HH:mm")}<br><strong>${sensor.currentPower} W<strong></center>`);;
+            sensor_markers.push(issueMarker)
+        })
+
         this.layersControl['overlays']= {}
 
         let fixedPointsOverlayTitle = "<span class='fa fa-map-marker fa-2x'></span> " + this.translationService.get_instant('FIXED_POINTS');
@@ -366,6 +379,7 @@ export class OverviewComponent implements OnInit {
             [this.translationService.get_instant('GREEN')]: L.layerGroup(green_markers),
             [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers),
             [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
+            [this.translationService.get_instant('SENSORS')]: L.layerGroup(sensor_markers)
 
         }
 

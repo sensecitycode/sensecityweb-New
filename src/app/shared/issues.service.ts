@@ -232,6 +232,10 @@ export class IssuesService {
                 sensors.push({"issue": "humidity", "value_desc": "Humidity value", "loc": {"type": "Point", "coordinates": [-0.10797500610351562, 51.51122644944369]}});
                 sensors.push({"issue": "temperature", "value_desc": "Temperature value", "loc": {"type": "Point", "coordinates": [-0.1247549057006836, 51.51610055355692]}});
                 sensors.push({"issue": "temperature", "value_desc": "Temperature value", "loc": {"type": "Point", "coordinates": [-0.11132240295410155, 51.51822363035807]}});
+                break
+            case 'testcity1':
+                sensors.push({"issue": "photovoltaic", "name":"tsigkanos", "modelName": "HIT H250E01", "address": "Mykonou 6", "lastUpdateTime":"2018-06-29 16:33:02", "currentPower":"7493.917", "loc": {"type": "Point", "coordinates": [21.816411637667308, 38.288982228304015]}})
+                sensors.push({"issue": "photovoltaic", "name":"tsigkanos", "modelName": "HIT H250E01", "address": "Mykonou 6", "lastUpdateTime":"2018-06-29 16:33:02", "currentPower":"7493.917", "loc": {"type": "Point", "coordinates": [21.836411637667308, 38.268982228304015]}})
         }
         return sensors
     }
