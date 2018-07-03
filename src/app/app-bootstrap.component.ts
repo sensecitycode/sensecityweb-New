@@ -2,7 +2,6 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IssuesService } from './shared/issues.service';
 
-declare const twttr: any;
 
 @Component({
     selector: 'app-bootstrap',

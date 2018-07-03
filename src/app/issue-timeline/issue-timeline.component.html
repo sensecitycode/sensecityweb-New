@@ -144,11 +144,11 @@
                                             <mat-error *ngIf="eponymousReportForm.controls.fullname.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                         </mat-form-field>
                                         <mat-form-field class="full-width">
-                                            <input matInput placeholder="Email" formControlName="email" [required]=emailChecked/>
+                                            <input matInput type="email" placeholder="Email" formControlName="email" [required]=emailChecked/>
                                             <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                         </mat-form-field>
                                         <mat-form-field class="full-width">
-                                            <input matInput placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
+                                            <input matInput type="tel" placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
                                             <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                         </mat-form-field>
                                     </form>

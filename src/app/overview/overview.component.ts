@@ -75,6 +75,7 @@ export class OverviewComponent implements OnInit {
     issueCenter: L.LatLng
 
     subscriptions = new Subscription()
+    refreshInterval:any
 
     ngOnInit() {
         this.last_months_params = {months:'1'}
@@ -143,13 +144,13 @@ export class OverviewComponent implements OnInit {
             this.displaysIssuesOnMap()
         }))
 
-        // setInterval(() => {
-        //     this.fetchLast7DaysIssues(today, sevenDaysAgo)
-        //     this.fetchLastMonthsIssues(today, monthsAgo)
-        //     this.fetchLastMonthsSolutions(today, monthsAgo)
-        //     this.fetchLast6Issues()
-        //     this.fetchLast7DaysFeelings(today, sevenDaysAgo)
-        // }, 300000)
+        this.refreshInterval = setInterval(() => {
+            this.fetchLast7DaysIssues(today, sevenDaysAgo)
+            this.fetchLastMonthsIssues(today, monthsAgo)
+            this.fetchLastMonthsSolutions(today, monthsAgo)
+            this.fetchLast6Issues()
+            this.fetchLast7DaysFeelings(today, sevenDaysAgo)
+        }, 600000)
     }
 
     ngAfterViewInit() {
@@ -319,7 +320,7 @@ export class OverviewComponent implements OnInit {
         let green_markers = []
         let environment_markers = []
 
-        let sensor_markers = []
+        // let sensor_markers = []
 
         this.issuesLast7days.forEach((element) =>{
             let icon = this.issuesService.get_issue_icon(element.issue)
@@ -356,16 +357,16 @@ export class OverviewComponent implements OnInit {
             })
         })
 
-        this.issuesService.get_sensors().forEach( (sensor) => {
-            let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
-                icon: 'fa-bolt',
-                markerColor: 'orange',
-                prefix: 'fa',
-            })
-            let issueMarker = new L.Marker([sensor.loc.coordinates[1],sensor.loc.coordinates[0]], {icon: AwesomeMarker})
-                .bindPopup(`<center>${sensor.name}<br>${sensor.modelName}<br>${sensor.address}<br>${moment(sensor.lastUpdateTime).format("DD/MM/YY - HH:mm")}<br><strong>${sensor.currentPower} W<strong></center>`);;
-            sensor_markers.push(issueMarker)
-        })
+        // this.issuesService.get_sensors().forEach( (sensor) => {
+        //     let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+        //         icon: 'fa-bolt',
+        //         markerColor: 'orange',
+        //         prefix: 'fa',
+        //     })
+        //     let issueMarker = new L.Marker([sensor.loc.coordinates[1],sensor.loc.coordinates[0]], {icon: AwesomeMarker})
+        //         .bindPopup(`<center>${sensor.name}<br>${sensor.modelName}<br>${sensor.address}<br>${moment(sensor.lastUpdateTime).format("DD/MM/YY - HH:mm")}<br><strong>${sensor.currentPower} W<strong></center>`);;
+        //     sensor_markers.push(issueMarker)
+        // })
 
         this.layersControl['overlays']= {}
 
@@ -379,7 +380,7 @@ export class OverviewComponent implements OnInit {
             [this.translationService.get_instant('GREEN')]: L.layerGroup(green_markers),
             [this.translationService.get_instant('ENVIRONMENT')]: L.layerGroup(environment_markers),
             [this.translationService.get_instant('PLUMBING')]: L.layerGroup(plumbing_markers),
-            [this.translationService.get_instant('SENSORS')]: L.layerGroup(sensor_markers)
+            // [this.translationService.get_instant('SENSORS')]: L.layerGroup(sensor_markers)
 
         }
 
@@ -438,5 +439,6 @@ export class OverviewComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscriptions.unsubscribe()
+        clearInterval(this.refreshInterval)
     }
 }

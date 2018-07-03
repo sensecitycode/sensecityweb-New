@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
+declare const twttr: any;
 
 @Component({
     selector: 'app-root',

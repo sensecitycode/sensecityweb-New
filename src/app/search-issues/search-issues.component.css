@@ -35,3 +35,9 @@
     text-align: center;
     font-weight: bold;
 }
+
+@media screen and (max-width: 991px) {
+  .search-button-container {
+    margin-top: 1em
+  }
+}

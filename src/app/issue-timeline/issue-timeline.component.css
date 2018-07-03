@@ -291,3 +291,9 @@ h3 {
         display:block;
     }
 }
+
+@media (max-width:991px) {
+    .info_modes_card {
+        margin-top:1.5em
+    }
+}
