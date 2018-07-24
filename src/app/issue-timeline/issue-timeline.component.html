@@ -40,9 +40,10 @@
                                 leaflet
                                 (leafletMapReady)="onMapReady($event)"
                                 [leafletOptions]="mapInit"
-                                [leafletLayers]="mapLayers"
                                 [leafletZoom]="issueZoom"
                                 [leafletCenter]="issueCenter"
+                                [leafletLayers]="mapLayers"
+                                [leafletLayersControl]="layersControl"
                                 >
                                 </div>
                             </div>
@@ -64,13 +65,18 @@
 
                 <div class="card-body" style="margin: 0" *ngIf='progress.state == "CONFIRMED" || progress.state == "IN_PROGRESS" || progress.state == "RESOLVED"'>
                     <p *ngIf='first'>{{ 'ADDRESS' | translate }}: <strong>{{issue.city_address}}</strong></p>
+                    <p>
+                      {{'STATUS' | translate}}: <strong>{{progress.state | translate}}</strong>
+                      <strong><span *ngIf="last && issue.resolution && issue.status == 'RESOLVED'">({{'RESOLVED_STATUS.' + issue.resolution | translate}})</span></strong>
+                    </p>
                     <div>{{ 'ASSIGNED_TO' | translate }}: <strong>{{progress.department}}</strong></div>
                     <!-- <div style="margin-top:1rem" *ngIf='last && progress.state == "RESOLVED"'>{{ 'ASSIGNED_TO' | translate }}: <strong>{{issue.resolution}}</strong></div> -->
                 </div>
 
-                <div *ngIf="!last && progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div>
-                <div *ngIf="last && progress.text != 'undefined' && issue.resolution != 'DUPLICATE'" class='comment card-body'>{{progress.text}}</div>
-                <div *ngIf="last && issue.resolution == 'DUPLICATE'" class='comment card-body'>{{'DASHBOARD.DUPLICATE_ISSUE_REPORTED' | translate}} #{{progress.text}}</div>
+                <div *ngIf="progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div>
+                <!-- <div *ngIf="!last && progress.text != 'undefined'" class='comment card-body'>{{progress.text}}</div> -->
+                <!-- <div *ngIf="last && progress.text != 'undefined' && issue.resolution != 'DUPLICATE'" class='comment card-body'>{{progress.text}}</div> -->
+                <!-- <div *ngIf="last && issue.resolution == 'DUPLICATE'" class='comment card-body'>{{'DUPLICATE_ISSUE_REPORTED' | translate}} #{{progress.text}}</div> -->
                 <div *ngIf="progress.fileURLSs != []" style='display:flex'>
                         <div *ngFor="let fileURL of progress.fileURLs; index as fileIndex;" style="height: 4rem; width: 4rem; float: left; margin: 1.25rem; margin-right: 0">
                             <a *ngIf="progress.file_types[fileIndex] === 'application'" href="{{fileURL}}" class="file-thumb-wrapper fa fa-file-o"></a>
@@ -146,25 +152,28 @@
                                         <mat-form-field class="full-width">
                                             <input matInput type="email" placeholder="Email" formControlName="email" [required]=emailChecked/>
                                             <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                            <mat-error *ngIf="eponymousReportForm.controls.email.hasError('pattern')" [innerHTML]="'INVALID_MAIL_ERR' | translate"></mat-error>
                                         </mat-form-field>
                                         <mat-form-field class="full-width">
                                             <input matInput type="tel" placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
                                             <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                            <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('pattern')" [innerHTML]="'INVALID_PHONE_ERR' | translate"></mat-error>
                                         </mat-form-field>
                                     </form>
                                 </div>
 
-                                <div class="col-md-6 card info_modes_card">
+                                <div class="col-md-6 ">
+                                  <div class="col-12 card info_modes_card">
                                     <div>
                                         {{'INFO_MODES' | translate}}
                                     </div>
-
-                                    <div *ngIf = "cityPolicy?.active_sms_service">
+                                    <div *ngIf = "cityPolicy?.active_sms_service == 'true'">
                                         <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
                                     </div>
                                     <div>
                                         <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
                                     </div>
+                                  </div>
                                 </div>
 
                             </div>

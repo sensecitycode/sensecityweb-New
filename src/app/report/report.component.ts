@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, NgZone, ViewChild, ChangeDetectorRef  } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, NgZone, ViewChild, ElementRef  } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import {MatDialog} from '@angular/material/dialog';
@@ -13,6 +13,11 @@ import 'leaflet.gridlayer.googlemutant';
 import * as UntypedL from 'leaflet/dist/leaflet-src'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+export function addressToMapValidator(control: FormControl) {
+    return (control.parent && (control.parent.get('latitude').value == '' || control.parent.get('longitude').value == '' )) ? {addressToMap: true} :  null;
+}
 
 @Component({
     selector: 'app-report',
@@ -20,13 +25,15 @@ import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
     styleUrls: ['./report.component.css'],
     encapsulation: ViewEncapsulation.Emulated
 })
+
+
+
 export class ReportComponent implements OnInit {
 
     constructor(private translationService: TranslationService,
                 private issuesService: IssuesService,
                 private toastr: ToastrService,
                 private zone: NgZone,
-                private cdr: ChangeDetectorRef,
                 private dialog: MatDialog) { }
 
 
@@ -51,6 +58,7 @@ export class ReportComponent implements OnInit {
     issueCenter: L.LatLng
 
     @ViewChild('stepper') stepper;
+    @ViewChild('addressSearchInput') addressSearchInput: ElementRef;
     selectedStepIndex = 0
 
     ngOnInit() {
@@ -80,19 +88,21 @@ export class ReportComponent implements OnInit {
         }
 
         this.issueReportForm = new FormGroup({
-            longitude: new FormControl({value: '', disabled: true}, Validators.required),
-            latitude: new FormControl({value: '', disabled: true}, Validators.required),
-            address: new FormControl('', Validators.required),
+            longitude: new FormControl({value:'', disabled:true}, Validators.required),
+            latitude: new FormControl({value:'', disabled:true}, Validators.required),
+            address: new FormControl('', [Validators.required, addressToMapValidator]),
             issue_type: new FormControl('garbage', Validators.required),
             issue_subtype: new FormControl('damaged_bin', Validators.required),
             issue_misc_desc: new FormControl(''),
             comment: new FormControl('')
         })
 
+
+
         this.eponymousReportForm = new FormGroup({
             fullname: new FormControl(''),
-            email: new FormControl(''),
-            mobile: new FormControl('')
+            email: new FormControl('', [Validators.pattern(EMAIL_REGEX)]),
+            mobile: new FormControl('', [Validators.pattern(/^[0-9]*$/)])
         })
     }
 
@@ -207,6 +217,12 @@ export class ReportComponent implements OnInit {
         }
     }
 
+    checkEnterKey(event) {
+      if (event.keyCode == 13) {
+        this.searchAddress(this.addressSearchInput.nativeElement.value)
+      }
+    }
+
     searchAddress(address) {
         if (address != '')
         {
@@ -227,7 +243,7 @@ export class ReportComponent implements OnInit {
     }
 
     cityPolicy:object
-    step2_disabled:boolean = true;
+    // step2_disabled:boolean = true;
     displayIssuesOnMap(lat, lng) {
         this.issueCenter =  L.latLng(lat,lng)
         this.issueZoom = 17
@@ -241,7 +257,7 @@ export class ReportComponent implements OnInit {
         });
         let issueMarker = new L.Marker([lat, lng], {icon: AwesomeMarker})
 
-		this.mapLayers.push(issueMarker)
+      	this.mapLayers.push(issueMarker)
         this.issueReportForm.patchValue({latitude:lat, longitude:lng})
 
         this.issuesService.fetch_city_policy(lat, lng)
@@ -251,7 +267,7 @@ export class ReportComponent implements OnInit {
             () =>
             {
                 if (this.cityPolicy['municipality'] && this.cityPolicy['municipality'] == this.issuesService.city) {
-                    this.step2_disabled = false;
+                    // this.step2_disabled = false;
 
                     //
                     //for 2nd step
@@ -262,7 +278,7 @@ export class ReportComponent implements OnInit {
                     //for 3nd step
 
                 } else {
-                    this.step2_disabled = true;
+                    // this.step2_disabled = true;
                     this.toastr.error(this.translationService.get_instant('INVALID_ADDRESS_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
             }
@@ -396,7 +412,7 @@ export class ReportComponent implements OnInit {
             return (this.emailActivated && this.mobileActivated)
         } else {
             if (this.emailChecked) return this.emailActivated
-            if (this.mobileActivated) return this.mobileActivated
+            if (this.smsChecked) return this.mobileActivated
         }
     }
 
@@ -519,10 +535,14 @@ export class ReportComponent implements OnInit {
                     if (this.eponymousCheckbox) {
                         let user_obj = {
                             "uuid":"web-site",
-                            "name":this.eponymousReportForm.get('fullname').value,
-                            "email":this.eponymousReportForm.get('email').value,
-                            "mobile_num":this.eponymousReportForm.get('mobile').value
+                            "name":this.eponymousReportForm.get('fullname').value
+                            // "email":this.eponymousReportForm.get('email').value,
+                            // "mobile_num":this.eponymousReportForm.get('mobile').value
                         }
+
+                        this.smsChecked ? user_obj["mobile_num"] = this.eponymousReportForm.get('mobile').value : user_obj["mobile_num"] = ''
+                        this.emailChecked ? user_obj["email"] = this.eponymousReportForm.get('email').value : user_obj["email"] = ''
+
                         this.issuesService.make_issue_eponymous(issueReportResponse["_id"], user_obj)
                         .subscribe(
                             data => {
@@ -541,10 +561,13 @@ export class ReportComponent implements OnInit {
         } else {
             let sub_obj = {
                 "name":this.eponymousReportForm.get('fullname').value,
-                "email":this.eponymousReportForm.get('email').value,
-                "mobile_num":this.eponymousReportForm.get('mobile').value,
+                // "email":this.eponymousReportForm.get('email').value,
+                // "mobile_num":this.eponymousReportForm.get('mobile').value,
                 "bug_id":this.recommendedIssues[this.selectedRecomIndex].id
             }
+
+            this.smsChecked ? sub_obj["mobile_num"] = this.eponymousReportForm.get('mobile').value : sub_obj["mobile_num"] = ''
+            this.emailChecked ? sub_obj["email"] = this.eponymousReportForm.get('email').value : sub_obj["email"] = ''
 
             if (this.issueReportForm.get('comment').value != '') {
                 sub_obj['comment'] = this.issueReportForm.get('comment').value.replace(/\s+/g, ' ').trim()
@@ -580,13 +603,14 @@ export class ReportComponent implements OnInit {
         this.selectedStepIndex = 0
         this.stepper.reset()
 
-        this.step2_disabled = true;
-        // this.issueReportForm.reset();
+        // this.step2_disabled = true;
+
         this.issueSelectedIndex = 0
         this.subtypeOtherSelected = false
         this.imageName = '';
         this.imageUrl = '';
         this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin', comment:''})
+        this.issueReportForm.get('address').setErrors(null)
         this.issueZoom = this.issuesService.cityCenter.zoom,
         this.issueCenter = L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         this.mapLayers = []

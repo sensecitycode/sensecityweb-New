@@ -11,7 +11,7 @@
                                 <hr />
                                 <div>
                                     <div class="input-group">
-                                        <input class="form-control flex-input-group-append" #addressSearchInput placeholder="{{'ADDRESS' | translate}}" aria-describedby="enter address">
+                                        <input class="form-control flex-input-group-append" #addressSearchInput placeholder="{{'ADDRESS_TO_MAP' | translate}}" (keyup)="checkEnterKey($event)" aria-describedby="enter address">
                                         <div class="input-group-append">
                                             <button mat-button class="btn-light" (click)="searchAddress(addressSearchInput.value)" style="background-color: #e9ecef;">{{'SEARCH' | translate}} </button>
                                         </div>
@@ -40,20 +40,22 @@
                                         <div class="container">
                                             <div class="row">
                                                 <div class="col-12 text-center step_header">
-                                                    <h3><i>{{'ISSUE_REPORT' | translate}}</i></h3>
+                                                    <h4><i>{{'ISSUE_REPORT' | translate}}</i></h4>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <mat-form-field class="full-width">
-                                                        <input matInput placeholder="{{'LONGITUDE' | translate}}" formControlName="longitude"/>
+                                                        <input matInput placeholder="{{'LONGITUDE' | translate}}" readonly formControlName="longitude"/>
                                                         <mat-error *ngIf="issueReportForm.controls.longitude.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                                     </mat-form-field>
                                                     <mat-form-field class="full-width">
-                                                        <input matInput placeholder="{{'LATITUDE' | translate}}" formControlName="latitude"/>
+                                                        <input matInput placeholder="{{'LATITUDE' | translate}}" readonly formControlName="latitude"/>
                                                         <mat-error *ngIf="issueReportForm.controls.latitude.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
                                                     </mat-form-field>
                                                     <mat-form-field class="full-width">
                                                         <input matInput placeholder="{{'ADDRESS' | translate}}" formControlName="address"/>
                                                         <mat-error *ngIf="issueReportForm.controls.address.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                        <mat-error *ngIf="!issueReportForm.controls.address.hasError('required') && issueReportForm.controls.address.hasError('addressToMap')" [innerHTML]="'ADDRESS_TO_MAP_ERROR' | translate"></mat-error>
+                                                        <mat-icon matSuffix (click)="searchAddress(issueReportForm.controls.address.value)" [ngStyle]="{'cursor':'pointer', 'color': issueReportForm.controls.address.touched && !issueReportForm.controls.address.hasError('required') && issueReportForm.controls.address.hasError('addressToMap') ? '#f44336' : 'unset'}">place</mat-icon>
                                                     </mat-form-field>
                                                 </div>
                                                 <div class="col-md-6">
@@ -98,7 +100,7 @@
 
                                         <div class="row stepper_nav_buttons">
                                             <div class="col-12 text-right">
-                                                <button mat-raised-button class="grey300-material-palette" matStepperNext [disabled]="step2_disabled">{{'NEXT' | translate}}</button>
+                                                <button mat-raised-button class="grey300-material-palette" matStepperNext>{{'NEXT' | translate}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -111,7 +113,7 @@
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-12 text-center step_header">
-                                                <h3><i>{{'EPONYMOUS_REPORT' | translate}}</i></h3>
+                                                <h4><i>{{'EPONYMOUS_REPORT' | translate}}</i></h4>
                                             </div>
                                             <div class="col-12">
                                                 <div class="form_header" [innerHTML]="issueCityPolicy?.policy_desc"></div>
@@ -125,7 +127,7 @@
                                             </div>
                                             <div class="row" *ngIf='eponymousCheckbox'>
 
-                                                <div class="col-md-6">
+                                                <div class="col-xl-6">
                                                     <form [formGroup]="eponymousReportForm">
                                                         <mat-form-field class="full-width">
                                                             <input matInput placeholder="{{'FULL_NAME' | translate}}" formControlName="fullname" [required]=true/>
@@ -134,27 +136,28 @@
                                                         <mat-form-field class="full-width">
                                                             <input matInput type="email" placeholder="Email" formControlName="email" [required]=emailChecked/>
                                                             <mat-error *ngIf="eponymousReportForm.controls.email.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                            <mat-error *ngIf="eponymousReportForm.controls.email.hasError('pattern')" [innerHTML]="'INVALID_MAIL_ERR' | translate"></mat-error>
                                                         </mat-form-field>
                                                         <mat-form-field class="full-width">
                                                             <input matInput type="tel" placeholder="{{'MOBILE' | translate}}" formControlName="mobile" [required]=smsChecked/>
                                                             <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('required')" [innerHTML]="'REQ_ERR' | translate"></mat-error>
+                                                            <mat-error *ngIf="eponymousReportForm.controls.mobile.hasError('pattern')" [innerHTML]="'INVALID_PHONE_ERR' | translate"></mat-error>
                                                         </mat-form-field>
                                                     </form>
                                                 </div>
 
-                                                <div class="col-md-6 card info_modes_card">
+                                                <div class="col-xl-6 ">
+                                                  <div class="col-12 card info_modes_card">
                                                     <div>
                                                         {{'INFO_MODES' | translate}}
                                                     </div>
-
-                                                    <div *ngIf = "cityPolicy?.active_sms_service">
+                                                    <div *ngIf = "cityPolicy?.active_sms_service == 'true'">
                                                         <mat-checkbox color="primary" #sms_checkbox [(ngModel)]="smsChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_sms">sms</mat-checkbox>
                                                     </div>
                                                     <div>
                                                         <mat-checkbox color="primary" #email_checkbox [(ngModel)]="emailChecked" [ngModelOptions]="{standalone: true}" [disabled]="cityPolicy?.mandatory_email">email</mat-checkbox>
                                                     </div>
-                                                </div>
-                                                <div class="col-12">
+                                                  </div>
                                                 </div>
 
                                             </div>
@@ -178,7 +181,7 @@
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-12 text-center step_header">
-                                                <h3><i>{{'RECOMMENDED_ISSUES' | translate}}</i></h3>
+                                                <h4><i>{{'RECOMMENDED_ISSUES' | translate}}</i></h4>
                                             </div>
 
                                             <div class="col-12">
@@ -241,7 +244,7 @@
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-12 text-center step_header">
-                                                <h3><i>{{'CERTIFICATION' | translate}}</i></h3>
+                                                <h4><i>{{'CERTIFICATION' | translate}}</i></h4>
                                             </div>
 
                                             <div class="col-12">
@@ -347,7 +350,7 @@
                                     <div class="container">
                                         <div class="row text-center">
                                             <div class="col-12 text-center step_header">
-                                                <h3><i>{{'SUBMIT_REPORT' | translate}}</i></h3>
+                                                <h4><i>{{'SUBMIT_REPORT' | translate}}</i></h4>
                                             </div>
 
                                             <div class="col-12">

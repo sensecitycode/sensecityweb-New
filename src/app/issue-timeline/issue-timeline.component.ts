@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs/Subscription'
 
 
 import { TranslationService } from '../shared/translation.service';
@@ -12,12 +13,14 @@ import { Lightbox } from 'angular2-lightbox';
 import { } from '@types/googlemaps';
 
 import * as L from 'leaflet';
+import 'leaflet.gridlayer.googlemutant';
+
 import * as UntypedL from 'leaflet/dist/leaflet-src'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers';
 
 import * as moment from 'moment';
 
-
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 @Component({
     selector: 'app-issue-timeline',
@@ -40,6 +43,8 @@ export class IssueTimelineComponent implements OnInit {
     issueZoom:number ;
     issueCenter: L.LatLng
     mapLayers = [];
+    layersControl = {};
+
 
 
     eponymousReportForm: FormGroup;
@@ -48,7 +53,7 @@ export class IssueTimelineComponent implements OnInit {
     @ViewChild('allowLastStep') allowLastStep;
     selectedStepIndex = 0
 
-
+    subscription: Subscription
     ngOnInit() {
         if (this.activatedRoute.routeConfig.path == "issue/:id") {
             this.issueID = this.activatedRoute.snapshot.params.id
@@ -60,21 +65,42 @@ export class IssueTimelineComponent implements OnInit {
             this.fetchFullIssue()
 
 
-        let baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+        let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' })
+
+        let googleRoadMap = UntypedL.gridLayer.googleMutant({
+            type: 'roadmap',
+            maxZoom: 18
+        })
+        googleRoadMap.addGoogleLayer('TrafficLayer');
+
+        let googleHybrid = UntypedL.gridLayer.googleMutant({
+            type: 'hybrid',
+            maxZoom: 18
+        })
+
         this.mapInit = {
-            layers: [baseLayer],
+            layers: [openStreetMaps],
             zoom: this.issuesService.cityCenter.zoom,
             center: L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         };
 
+        this.layersControl['baseLayers'] = {
+            'Open Street Maps': openStreetMaps,
+            'Google Maps Traffic': googleRoadMap,
+            'Google Maps Satellite': googleHybrid,
+        }
+
         this.eponymousReportForm = new FormGroup({
             fullname: new FormControl(''),
-            email: new FormControl(''),
-            mobile: new FormControl('')
+            email: new FormControl('', [Validators.pattern(EMAIL_REGEX)]),
+            mobile: new FormControl('', [Validators.pattern(/^[0-9]*$/)])
         })
+
+        this.subscription = this.translationService.languageChanged.subscribe( (lang: string) => {if (this.history) this.fetchHistory()})
     }
 
     fetchFullIssue() {
+        this.issue = {}
         this.issuesService.fetch_fullIssue(this.issueID)
         .subscribe(
             data => {
@@ -97,6 +123,7 @@ export class IssueTimelineComponent implements OnInit {
     }
 
     displayIssueOnMap(issue) {
+        this.mapLayers = []
         let icon = this.issuesService.get_issue_icon(issue.issue)
         let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
             icon: icon,
@@ -122,7 +149,6 @@ export class IssueTimelineComponent implements OnInit {
         let duplicate_issue_status = '';
 
         this.issue.bugs[this.issue.bug_id].comments.slice(1).forEach((comment, comment_index) => {
-
             com_text = comment.text
             let com_text_splitted = com_text.split(" ");
             switch (true) {
@@ -130,12 +156,12 @@ export class IssueTimelineComponent implements OnInit {
                     com_text = "undefined";
                     break
                 case (com_text_splitted.indexOf("This") != -1):
-                    com_text = com_text_splitted[com_text_splitted.length-2];
+                    com_text = this.translationService.get_instant("DUPLICATE_ISSUE_REPORTED") + " #" + com_text_splitted[com_text_splitted.length-2];
                     duplicate_issue_status = 'RESOLVED';
                     break
                 case (com_text_splitted.indexOf("Bug") != -1):
-                    com_text = this.translationService.get_instant("DASHBOARD.DUPLICATE_ISSUE_REPORTED") + " #" + com_text_splitted[2]
-                    duplicate_issue_status = 'CONFIRMED';
+                    com_text = this.translationService.get_instant("DUPLICATE_ISSUE_REPORTED") + " #" + com_text_splitted[2]
+                    duplicate_issue_status = this.history[comment_index-1].state;
             }
 
 
@@ -179,7 +205,6 @@ export class IssueTimelineComponent implements OnInit {
                 if (comment.tags[l].split(":")[0].toUpperCase() == "ACTION" && comment.tags[l].split(":")[1].toUpperCase() == "USER-EXISTED") {
                     user_status = "USER-EXISTED";
                 }
-
             }
 
             var history_object = {
@@ -187,7 +212,7 @@ export class IssueTimelineComponent implements OnInit {
                 "file_types": file_types,
                 "text": com_text,
                 "timestamp": comment.time,
-                "created_at": moment(new Date(comment.time)).locale(this.initial_language).format('DD MMM YYYY')
+                "created_at": moment(new Date(comment.time)).locale(this.translationService.getLanguage()).format('DD MMM YYYY')
             }
 
             if (status_index != -1) {
@@ -216,9 +241,7 @@ export class IssueTimelineComponent implements OnInit {
                     history_object['state'] = 'NEW_USER_SUBSCRIBED'
                 }
             }
-
             this.history.push(history_object)
-
         })
     }
 
@@ -417,7 +440,7 @@ export class IssueTimelineComponent implements OnInit {
             return (this.emailActivated && this.mobileActivated)
         } else {
             if (this.emailChecked) return this.emailActivated
-            if (this.mobileActivated) return this.mobileActivated
+            if (this.smsChecked) return this.mobileActivated
         }
     }
 
@@ -523,10 +546,13 @@ export class IssueTimelineComponent implements OnInit {
 
         let sub_obj = {
             "name":this.eponymousReportForm.get('fullname').value,
-            "email":this.eponymousReportForm.get('email').value,
-            "mobile_num":this.eponymousReportForm.get('mobile').value,
+            // "email":this.eponymousReportForm.get('email').value,
+            // "mobile_num":this.eponymousReportForm.get('mobile').value,
             "bug_id":this.issue.bug_id
         }
+
+        this.smsChecked ? sub_obj["mobile_num"] = this.eponymousReportForm.get('mobile').value : sub_obj["mobile_num"] = ''
+        this.emailChecked ? sub_obj["email"] = this.eponymousReportForm.get('email').value : sub_obj["email"] = ''
 
         if (this.commentText != undefined) {
             sub_obj["comment"] = this.commentText.replace(/\s+/g, ' ').trim()
@@ -538,24 +564,23 @@ export class IssueTimelineComponent implements OnInit {
                 if (data =='success') {
                     this.toastr.success(this.translationService.get_instant('ISSUE_SUB_SUCCESS'), this.translationService.get_instant('SUCCESS'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
-                this.resetStepper()
             },
             error => {
-                console.error(error)
                 if (error.error == "Bad Request") {
                     this.toastr.error(this.translationService.get_instant('ISSUE_SUB_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
                 } else {
                     this.toastr.error(this.translationService.get_instant('SERVICES_ERROR_MSG'), this.translationService.get_instant('ERROR'), {timeOut:8000, progressBar:true, enableHtml:true})
                 }
                 this.resetStepper()
-            }
+            },
+            () => this.resetStepper()
         )
     }
 
     resetStepper() {
         this.selectedStepIndex = 0
         this.stepper.reset()
-        this.eponymousReportForm.setValue({fullname:'', email:'', mobile:''})
+        this.eponymousReportForm.patchValue({fullname:'', email:'', mobile:''})
 
         this.emailCodeSent = false;
         this.emailCodeChecked = false;
@@ -575,4 +600,7 @@ export class IssueTimelineComponent implements OnInit {
     //
     // ENF OF STEP 3 -- SUBSCRIPTION
     //
+    ngOnDestroy() {
+      this.subscription.unsubscribe()
+    }
 }

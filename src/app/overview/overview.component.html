@@ -1,8 +1,8 @@
 <div class="container-fluid">
     <div class="row">
-        <div class='col-lg-9'>
+        <div class='col-xl-9'>
             <div class="row">
-                <div class="col-xl-3 col-lg-6 col-xs-12">
+                <div class="col-xl-3 col-sm-6">
                     <a [routerLink]="['/search']" [queryParams]="{query: 1}">
                         <div class="card card-stats" style="margin-bottom:0">
                             <div class="card-content">
@@ -14,7 +14,7 @@
                                         <img src="assets/images/issues.png" alt="">
                                     </div>
 
-                                    <div class="col-9">
+                                    <div class="col-9 card-context">
                                         <p class="category">{{'ISSUES' | translate }}</p>
                                         <p  class="category-desc margin-bot-05">
                                             <!-- <i class="material-icons">date_range</i> -->
@@ -34,7 +34,7 @@
                     </a>
                 </div>
 
-                <div class="col-xl-3 col-lg-6 col-xs-12">
+                <div class="col-xl-3 col-sm-6">
                     <a [routerLink]="['/search']" [queryParams]="{query: 2}">
                         <div class="card card-stats" style="margin-bottom:0">
                             <div class="card-content">
@@ -45,7 +45,7 @@
                                         <img src="assets/images/events.png" alt="">
                                     </div>
 
-                                    <div class="col-9">
+                                    <div class="col-9 card-context">
 
                                         <p class="category">{{'EVENTS' | translate}}</p>
                                         <!-- {{'CONFIRMED' | translate}} / {{'IN_PROGRESS' | translate}} {{'AND' | translate}} {{'CITIZEN_MOOD' | translate}} -->
@@ -64,7 +64,7 @@
                     </a>
                 </div>
 
-                <div class="col-xl-3 col-lg-6 col-xs-12">
+                <div class="col-xl-3 col-sm-6">
                     <a [routerLink]="['/search']" [queryParams]="{query: 3}">
                         <div class="card card-stats" style="margin-bottom:0">
                             <div class="card-content">
@@ -76,7 +76,7 @@
 
                                     </div>
 
-                                    <div class="col-9">
+                                    <div class="col-9 card-context">
                                         <p class="category">{{'ISSUES' | translate}}</p>
                                         <p  class="category-desc margin-bot-05">
                                             <!-- <i class="material-icons">date_range</i> -->
@@ -100,7 +100,7 @@
                     </a>
                 </div>
 
-                <div class="col-xl-3 col-lg-6 col-xs-12">
+                <div class="col-xl-3 col-sm-6">
                     <a [routerLink]="['/search']" [queryParams]="{query: 4}">
                         <div class="card card-stats" style="margin-bottom:0" >
                             <div class="card-content">
@@ -112,7 +112,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-9">
+                                    <div class="col-9 card-context">
                                         <p class="category">{{'SOLUTIONS' | translate}}</p>
                                         <p  class="category-desc margin-bot-05">
                                             <!-- <i class="material-icons">date_range</i> -->
@@ -161,7 +161,7 @@
             </div>
         </div>
     </div>
-    <div class='col-lg-3 column-flexbox'>
+    <div class='col-xl-3 column-flexbox'>
         <div class="card">
             <div class="card-header" >
                 <p class="category">{{'LAST_ISSUES' | translate}}</p>
@@ -181,10 +181,10 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div class="text-no-wrap">
                             <b>{{issue.issue | uppercase | translate}}</b>
                         </div>
-                        <div class="category-desc category-desc-carousel" style="margin:0 20px">
+                        <div class="category-desc text-no-wrap">
                             {{issue.value_desc}}
                         </div>
                     </div>

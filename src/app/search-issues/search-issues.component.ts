@@ -242,18 +242,18 @@ export class SearchIssuesComponent implements OnInit {
                     () => {
                         if (searchFeelingsResult.length == 1000) this.maxIssuesAlert = true;
 
+                        let marker
+                        let AwesomeMarker
                         searchFeelingsResult.forEach((element) => {
-                            let marker = this.issuesService.get_feeling_marker(element.issue)
-                            let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+                            marker = this.issuesService.get_feeling_marker(element.issue)
+                            AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                                 icon: marker.icon,
                                 markerColor: marker.color,
                                 iconColor: '#333',
                                 prefix: 'fa',
                             });
 
-                            let issueMarker = new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element.issue})
-
-                            this.markersObject['feelings_markers'].push(issueMarker)
+                            this.markersObject['feelings_markers'].push(new L.Marker([element.loc.coordinates[1],element.loc.coordinates[0]], {icon: AwesomeMarker, alt:element.issue}))
                         })
 
                         if (searchFeelingsResult.length > 0) {
@@ -282,9 +282,8 @@ export class SearchIssuesComponent implements OnInit {
                     () => {
                         if (searchIssueResults.length == 1000) this.maxIssuesAlert = true;
 
+                        let AwesomeMarker
                         searchIssueResults.forEach((element) => {
-                            let AwesomeMarker;
-
                             if (element.status != "RESOLVED") {
                                 AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                                     icon: icon,

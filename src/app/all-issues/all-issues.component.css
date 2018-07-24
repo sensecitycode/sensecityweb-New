@@ -32,10 +32,14 @@ img {
     font-size: 13px;
 }
 
+.text-no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0 20px;
+}
+
 .category-desc-carousel {
     margin-bottom: 0.2rem;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
 .card {

@@ -8,6 +8,7 @@ import { NgProgress } from '@ngx-progressbar/core';
 import { NguCarousel } from '@ngu/carousel';
 
 import { Subscription } from 'rxjs/Subscription'
+import { interval } from 'rxjs/observable/interval';
 
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -51,7 +52,6 @@ export class OverviewComponent implements OnInit {
     carouselOne: NguCarousel
     brokenImages = [false, false, false, false, false, false];
 
-
     issue_types = [
         {type: "garbage", icon: "fa fa-trash-o", markers:"garbage_markers"},
         {type: "lighting", icon: "fa fa-lightbulb-o", markers:"lighting_markers"},
@@ -62,10 +62,15 @@ export class OverviewComponent implements OnInit {
         {type: "environment", icon: "fa fa-leaf", markers:"environment_markers"}
     ]
 
-
     mapInit: {};
     markerClusterData: any[] = [];
-    markerClusterOptions: L.MarkerClusterGroupOptions;
+    markerClusterOptions: L.MarkerClusterGroupOptions = {
+        disableClusteringAtZoom: 19,
+        animateAddingMarkers: true,
+        spiderfyDistanceMultiplier: 2,
+        singleMarkerMode: false,
+        chunkedLoading: true
+    };
     markerClusterGroup: L.MarkerClusterGroup;
 
     mapLayers = [];
@@ -144,16 +149,19 @@ export class OverviewComponent implements OnInit {
             this.displaysIssuesOnMap()
         }))
 
-        this.refreshInterval = setInterval(() => {
+        this.subscriptions.add(interval(600000).subscribe(
+          () => {
             this.fetchLast7DaysIssues(today, sevenDaysAgo)
             this.fetchLastMonthsIssues(today, monthsAgo)
             this.fetchLastMonthsSolutions(today, monthsAgo)
             this.fetchLast6Issues()
             this.fetchLast7DaysFeelings(today, sevenDaysAgo)
-        }, 600000)
+          }
+        ))
     }
 
     ngAfterViewInit() {
+      if (twttr.widgets)
         twttr.widgets.load();
     }
 
@@ -245,65 +253,51 @@ export class OverviewComponent implements OnInit {
 
     // staticPointsLayerControl
     onMapReady(map: L.Map){
-        map.scrollWheelZoom.disable()
+        // map.scrollWheelZoom.disable()
         this.issuesService.fetch_fixed_points()
         .subscribe(
             data => {
                 let StaticGarbageMarkers:L.Layer[] = []
                 let StaticLightingMarkers:L.Layer[] = []
+                let AwesomeMarker;
                 for (let FixPnt of data) {
                     if (FixPnt.type == 'garbage') {
-                        let AwesomeMarker;
-                        switch (FixPnt.notes[0].ANAKIKLOSI) {
-                            case '0':
-                                AwesomeMarker = UntypedL.AwesomeMarkers.icon({
-                                    icon: 'fa-trash-o',
-                                    markerColor: 'green',
-                                    prefix: 'fa',
-                                    className: 'awesome-marker awesome-marker-square'
-                                });
-                                break;
-                            case '1':
-                                AwesomeMarker = UntypedL.AwesomeMarkers.icon({
-                                    icon: 'fa-trash-o',
-                                    markerColor: 'blue',
-                                    prefix: 'fa',
-                                    className: 'awesome-marker awesome-marker-square'
-                                });
+                        if (FixPnt.notes[0].ANAKIKLOSI == '0') {
+                            AwesomeMarker = UntypedL.AwesomeMarkers.icon({
+                                icon: 'fa-trash-o',
+                                markerColor: 'green',
+                                prefix: 'fa',
+                                className: 'awesome-marker awesome-marker-square'
+                            });
+                        } else {
+                            AwesomeMarker = UntypedL.AwesomeMarkers.icon({
+                                icon: 'fa-trash-o',
+                                markerColor: 'blue',
+                                prefix: 'fa',
+                                className: 'awesome-marker awesome-marker-square'
+                            });
                         }
-                        let TrashMarker = new L.Marker([FixPnt.loc.coordinates[1],FixPnt.loc.coordinates[0]], {icon: AwesomeMarker})
-                        StaticGarbageMarkers.push(TrashMarker);
+                        StaticGarbageMarkers.push(new L.Marker([FixPnt.loc.coordinates[1],FixPnt.loc.coordinates[0]], {icon: AwesomeMarker}));
                     }
-
-                    if (FixPnt.type == 'fotistiko') {
-                        let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+                    else {
+                        AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                             icon: 'fa-lightbulb-o',
                             markerColor: 'orange',
                             prefix: 'fa',
                             className: 'awesome-marker awesome-marker-square'
                         });
-                        let LightMarker = new L.Marker([FixPnt.loc.coordinates[1],FixPnt.loc.coordinates[0]], {icon: AwesomeMarker})
-                        StaticLightingMarkers.push(LightMarker);
+                        StaticLightingMarkers.push(new L.Marker([FixPnt.loc.coordinates[1],FixPnt.loc.coordinates[0]], {icon: AwesomeMarker}));
                     }
                 }
 
                 this.markerClusterData =  StaticLightingMarkers.concat(StaticGarbageMarkers);
-                this.markerClusterOptions = {
-                    disableClusteringAtZoom: 19,
-                    animateAddingMarkers: false,
-                    spiderfyDistanceMultiplier: 2,
-                    singleMarkerMode: false,
-                    showCoverageOnHover: true,
-                    chunkedLoading: true
-                }
+                // this.markerClusterOptions =
 
                 // let overlayTitle = "<span class='fa fa-map-marker fa-2x'></span> " + this.translationService.get_instant('FIXED_POINTS');
                 // this.layersControl['overlays'] = {}
                 // this.layersControl['overlays'][overlayTitle] = this.markerClusterGroup
                 //
                 // this.staticPointsLayerControl = L.control.layers({}, this.layersControl['overlays']).addTo(map)
-
-
             },
             error => { },
             () => { }
@@ -321,10 +315,11 @@ export class OverviewComponent implements OnInit {
         let environment_markers = []
 
         // let sensor_markers = []
-
+        let icon
+        let AwesomeMarker
         this.issuesLast7days.forEach((element) =>{
-            let icon = this.issuesService.get_issue_icon(element.issue)
-            let AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
+            icon = this.issuesService.get_issue_icon(element.issue)
+            AwesomeMarker =  UntypedL.AwesomeMarkers.icon({
                 icon: icon,
                 markerColor: 'red',
                 prefix: 'fa',
@@ -401,7 +396,6 @@ export class OverviewComponent implements OnInit {
         this.markerClusterGroup = group;
     }
 
-    carouselReady(event: Event) {    }
 
     imageLoadError(image_index) {
         this.brokenImages[image_index] = true;
@@ -439,6 +433,7 @@ export class OverviewComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscriptions.unsubscribe()
-        clearInterval(this.refreshInterval)
+        // clearInterval(this.refreshInterval)
+
     }
 }

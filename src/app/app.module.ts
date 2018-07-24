@@ -39,7 +39,8 @@ import {MatButtonModule,
         MatTooltipModule,
         MatDatepickerModule,
         MatDialogModule,
-        MatButtonToggleModule} from '@angular/material';
+        MatButtonToggleModule,
+        MatIconModule} from '@angular/material';
 
 import { MatMomentDateModule } from '@angular/material-moment-adapter'
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
@@ -106,6 +107,7 @@ registerLocaleData(localeEl);
         MatDatepickerModule,
         MatDialogModule,
         MatButtonToggleModule,
+        MatIconModule,
         NgProgressModule.forRoot(),
         NgProgressHttpModule,
         CommonModule,
