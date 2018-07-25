@@ -113,19 +113,21 @@ export class ReportComponent implements OnInit {
         }
 
         if (event.previouslySelectedIndex == 0) {
-            this.mapEditAllowed = false;
-            this.fetchIssuePolicies()
-            if (this.eponymousCheckbox) {
-                this.fetchRecommendedIssues()
+            if (Object.keys(this.cityPolicy).length !== 0) {
+              this.mapEditAllowed = false;
+              this.fetchIssuePolicies()
+              if (this.eponymousCheckbox) {
+                  this.fetchRecommendedIssues()
+              }
+            } else {
+              setTimeout(() => {this.resetStepper()} , 1)
             }
         }
 
-        if (this.issueCityPolicy.hasOwnProperty('add_issue')) {
+        if (this.issueCityPolicy.hasOwnProperty('add_issue') ) {
             if (this.issueCityPolicy.add_issue == 0){
-
                 this.issueCityPolicy = {}
-                this.resetStepper()
-
+                setTimeout(() => {this.resetStepper()} , 1)
             }
         }
 
@@ -271,14 +273,13 @@ export class ReportComponent implements OnInit {
 
                     //
                     //for 2nd step
-                    this.smsChecked = (this.cityPolicy['mandatory_sms'] === true)
-                    this.emailChecked = (this.cityPolicy['mandatory_email'] === true)
+                    this.smsChecked = (this.cityPolicy['mandatory_sms'].toLowerCase() === "true")
+                    this.emailChecked = (this.cityPolicy['mandatory_email'].toLowerCase() === "true")
 
                     //
                     //for 3nd step
 
                 } else {
-                    // this.step2_disabled = true;
                     this.toastr.error(this.translationService.get_instant('INVALID_ADDRESS_ERROR'), this.translationService.get_instant('ERROR'), {timeOut:6000, progressBar:true, enableHtml:true})
                 }
             }
@@ -610,12 +611,13 @@ export class ReportComponent implements OnInit {
         this.imageName = '';
         this.imageUrl = '';
         this.issueReportForm.patchValue({issue_type:'garbage', issue_subtype:'damaged_bin', comment:''})
-        this.issueReportForm.get('address').setErrors(null)
+        // this.issueReportForm.get('address').setErrors(null)
         this.issueZoom = this.issuesService.cityCenter.zoom,
         this.issueCenter = L.latLng(this.issuesService.cityCenter.lat , this.issuesService.cityCenter.lng)
         this.mapLayers = []
 
         this.issueCityPolicy = {}
+        this.eponymousCheckbox = true
         this.eponymousReportForm.setValue({fullname:'', email:'', mobile:''})
 
         this.recommendedIssues = []
